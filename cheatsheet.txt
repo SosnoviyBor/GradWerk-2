@@ -1,0 +1,6 @@
+# Run devserver
+uvicorn src.main:app --reload
+
+
+# Docker
+docker-compose up

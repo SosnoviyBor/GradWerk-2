@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}
+Model's Construct
+{% endblock title %}
+
+
+{% block static %}
+<!-- bootstrap -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+  integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+  integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+  crossorigin="anonymous"></script>
+<!-- drawflow -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jerosoler/Drawflow@0.0.48/dist/drawflow.min.css">
+<script src="https://cdn.jsdelivr.net/gh/jerosoler/Drawflow/dist/drawflow.min.js"></script>
+<!-- other -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css"
+  integrity="sha256-h20CPZ0QyXlBuAw7A+KluUYx/3pK+c7lYEpqLTlxjYQ=" crossorigin="anonymous" />
+<link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js"
+  integrity="sha256-KzZiKy0DWYsnwMF+X1DvQngQ2/FxF7MF3Ff72XcpuPs=" crossorigin="anonymous"></script>
+<script src="https://kit.fontawesome.com/81659bf471.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+<script src="https://unpkg.com/micromodal/dist/micromodal.min.js"></script>
+<!-- local -->
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', path='index/index.css') }}" />
+<script src="{{ url_for('static', path='index/main.js') }}" type="module"></script>
+<script src="{{ url_for('static', path='index/binders.js') }}" type="module"></script>
+{% endblock static %}
+
+
+{% block header %}
+<h2>Model's Construct</h2>
+<div class="github-link">
+  <a href="https://github.com/SosnoviyBor/GradWerk" target="_blank">
+    <i class="fab fa-github fa-3x"></i>
+  </a>
+</div>
+{% endblock header %}
+
+
+{% block wrapper %}
+<div class="col">
+  <div class="drag-drawflow" draggable="true" data-node="welcome">
+    <i class="fa-solid fa-thumbtack"></i><span> Welcome message</span>
+  </div>
+  <div class="drag-drawflow" draggable="true" data-node="userinput">
+    <i class="fa-solid fa-arrow-right-to-bracket"></i><span> User input</span>
+  </div>
+  <div class="drag-drawflow" draggable="true" data-node="useroutput">
+    <i class="fa-solid fa-arrow-right-from-bracket"></i><span> User output</span>
+  </div>
+  <div class="drag-drawflow" draggable="true" data-node="frontend">
+    <i class="fa-solid fa-computer"></i><span> Frontend</span>
+  </div>
+  <div class="drag-drawflow" draggable="true" data-node="backend">
+    <i class="fa-solid fa-server"></i><span> Backend</span>
+  </div>
+  <div class="drag-drawflow" draggable="true" data-node="database">
+    <i class="fa-solid fa-database"></i><span> Database</span>
+  </div>
+  <div class="drag-drawflow" draggable="true" data-node="comment">
+    <i class="fa-solid fa-comment"></i><span> Comment</span>
+  </div>
+
+  <div class="options" draggable="false">
+    <p class="options-p">Simulation time</p>
+    <input id="simtime" class="options-inp" type="number" min="1" value="100">
+    <p class="options-p">Log size</p>
+    <input id="log-max-size" class="options-inp" type="number" min="1" value="20" step="1">
+    <br>
+    <button id="start" class="btn btn-success">Start</button>
+  </div>
+</div>
+
+<div class="col-right">
+  <div id="drawflow">
+    <div id="btn-import" class="btn-top">
+      <input id="import-input" type="file" accept=".json" style="display:none"/>
+      Import
+    </div>
+    <div id="btn-export" class="btn-top">Export</div>
+    <div id="btn-clear" class="btn-top">Clear</div>
+  </div>
+</div>
+
+<div id="sim-started-overlay" hidden>
+  <div id="overlay-bg"></div>
+  <div id="overlay-text">
+    <h1>Simulation has started!</h1>
+    <h3>Once it is done, results will be shown in the new tab.</h3>
+    <br>
+    <p>Click anywhere to close this message.</p>
+  </div>
+</div>
+{% endblock wrapper %}
