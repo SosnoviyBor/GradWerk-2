@@ -37,18 +37,18 @@ def create_elements(model: dict) -> List[Element]:
         data = model[element_id]["data"]
         # create element based on its class
         match model[element_id]["class"]:
-            case "userinput":
+            case "create":
                 element = Create(float(data["mean"]), int(data["replica"]))
                 element.name = data["name"]
                 element.distribution = parse_dist(data["dist"])
                 element.delay_deviation = float(data["deviation"])
                 element.k = float(data["deviation"])
 
-            case "useroutput":
+            case "dispose":
                 element = Dispose()
                 element.name = data["name"]
 
-            case "frontend" | "backend" | "database":
+            case "process":
                 element = Process(float(data["mean"]), int(data["replica"]))
                 element.name = data["name"]
                 element.distribution = parse_dist(data["dist"])
@@ -57,7 +57,7 @@ def create_elements(model: dict) -> List[Element]:
                 element.max_queue = int(data["queuesize"])
 
             case _:
-                raise (f"Recieved unknown element class: {model[element_id]['class']}")
+                raise Exception(f"Received unknown element class: {model[element_id]['class']}")
         elements_by_id[element_id] = element
 
     # chain elements together

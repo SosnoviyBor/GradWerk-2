@@ -108,14 +108,14 @@ export const components = {
             </div>
         </div>
     `,
-    
-    "userinput": `
+
+    "create": `
         <div>
             <div class="title-box">
-                <i class="fa-solid fa-arrow-right-to-bracket"></i> User input
+                <i class="fa-solid fa-plus"></i> Create
             </div>
             ${CommonElements.modal([
-                CommonElements.set_name("User input"),
+                CommonElements.set_name("Create"),
                 CommonElements.set_dist,
                 CommonElements.set_mean,
                 CommonElements.set_deviation,
@@ -126,64 +126,30 @@ export const components = {
         </div>
     `,
 
-    "useroutput": `
+    "process": `
         <div>
             <div class="title-box">
-                <i class="fa-solid fa-arrow-right-from-bracket"></i> User output
+                <i class="fa-solid fa-gears"></i> Process
+            </div>
+            ${CommonElements.modal([
+                CommonElements.set_name("Process"),
+                CommonElements.set_dist,
+                CommonElements.set_mean,
+                CommonElements.set_deviation,
+                CommonElements.set_queue_size,
+                CommonElements.set_order,
+                CommonElements.set_replica_count
+            ])}
+        </div>
+    `,
+
+    "dispose": `
+        <div>
+            <div class="title-box">
+                <i class="fa-solid fa-trash"></i> Dispose
             </div>
             ${CommonElements.modal([
                 CommonElements.set_name("Dispose")
-            ])}
-        </div>
-    `,
-
-    "frontend": `
-        <div>
-            <div class="title-box">
-                <i class="fa-solid fa-computer"></i> Frontend
-            </div>
-            ${CommonElements.modal([
-                CommonElements.set_name("Frontend"),
-                CommonElements.set_dist,
-                CommonElements.set_mean,
-                CommonElements.set_deviation,
-                CommonElements.set_queue_size,
-                CommonElements.set_order,
-                CommonElements.set_replica_count
-            ])}
-        </div>
-    `,
-
-    "backend": `
-        <div>
-            <div class="title-box">
-                <i class="fa-solid fa-server"></i> Backend
-            </div>
-            ${CommonElements.modal([
-                CommonElements.set_name("Backend"),
-                CommonElements.set_dist,
-                CommonElements.set_mean,
-                CommonElements.set_deviation,
-                CommonElements.set_queue_size,
-                CommonElements.set_order,
-                CommonElements.set_replica_count
-            ])}
-        </div>
-    `,
-
-    "database": `
-        <div>
-            <div class="title-box">
-                <i class="fa-solid fa-database"></i> Database
-            </div>
-            ${CommonElements.modal([
-                CommonElements.set_name("Database"),
-                CommonElements.set_dist,
-                CommonElements.set_mean,
-                CommonElements.set_deviation,
-                CommonElements.set_queue_size,
-                CommonElements.set_order,
-                CommonElements.set_replica_count
             ])}
         </div>
     `,

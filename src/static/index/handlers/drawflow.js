@@ -43,36 +43,28 @@ function addNodeToDrawFlow(name, pos_x, pos_y) {
     pos_x = pos_x * (editor.precanvas.clientWidth / (editor.precanvas.clientWidth * editor.zoom)) - (editor.precanvas.getBoundingClientRect().x * (editor.precanvas.clientWidth / (editor.precanvas.clientWidth * editor.zoom)))
     pos_y = pos_y * (editor.precanvas.clientHeight / (editor.precanvas.clientHeight * editor.zoom)) - (editor.precanvas.getBoundingClientRect().y * (editor.precanvas.clientHeight / (editor.precanvas.clientHeight * editor.zoom)))
 
+    // Map legacy names to new ones
+    if (name === "userinput") name = "create";
+    if (name === "frontend") name = "process";
+    if (name === "useroutput") name = "dispose";
+
     const component = components[name]
     switch (name) {
         case "welcome":
             editor.addNode(name, 0, 0, pos_x, pos_y, name, {}, component)
             break
-
-        case "userinput":
+        case "create":
             editor.addNode(name, 0, 1, pos_x, pos_y, name, {}, component)
             break
-
-        case "useroutput":
+        case "process":
+            editor.addNode(name, 1, 1, pos_x, pos_y, name, {}, component)
+            break
+        case "dispose":
             editor.addNode(name, 1, 0, pos_x, pos_y, name, {}, component)
             break
-
-        case "frontend":
-            editor.addNode(name, 1, 1, pos_x, pos_y, name, {}, component)
-            break
-
-        case "backend":
-            editor.addNode(name, 1, 1, pos_x, pos_y, name, {}, component)
-            break
-
-        case "database":
-            editor.addNode(name, 1, 1, pos_x, pos_y, name, {}, component)
-            break
-
         case "comment":
             editor.addNode(name, 0, 0, pos_x, pos_y, name, {}, component)
             break
-
         default:
             console.log("Unexpected component is being added!")
     }
