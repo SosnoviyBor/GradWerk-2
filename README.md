@@ -19,4 +19,4 @@
 
 - [Bootstrap](https://github.com/twbs/bootstrap)
 
-<img src="./recources/me when.jpg">
+<img src="./resources/me when.jpg">
