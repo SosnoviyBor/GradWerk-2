@@ -1,0 +1,49 @@
+/* Log area grid and logbox styles */
+#logs {
+    margin-left: auto;
+    margin-right: auto;
+    font-family: Consolas;
+    padding-top: 60px;
+    padding-bottom: 40px;
+    overflow: visible;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 32px;
+    row-gap: 0;
+    align-items: start;
+    max-width: 1200px;
+    width: 100vw;
+    box-sizing: border-box;
+}
+
+.logbox-outer {
+    border: 2px solid #4e5d6c;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #232526 0%, #414345 100%);
+    box-shadow: 0 4px 24px 0 rgba(30, 40, 60, 0.12);
+    overflow: hidden;
+    margin-bottom: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 350px;
+    max-height: 80vh;
+}
+
+.logbox {
+    width: 100%;
+    min-height: 200px;
+    max-height: 60vh;
+    background: #181c20;
+    color: #a8ff60;
+    padding: 18px 18px 18px 18px;
+    overflow-y: auto;
+    overflow-x: auto;
+    scrollbar-color: #a8ff60 #181c20;
+    border-radius: 0 0 12px 12px;
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+
+.logbox::-webkit-scrollbar {
+    width: 12px;
+}
