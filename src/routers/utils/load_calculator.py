@@ -2,13 +2,11 @@ import numpy as np
 
 from src.modeler.utils.consts import DistributionType
 
-def calculate_load(deviation: float,
-                   dist: str,
-                   mean: float,
-                   replica: int):
+
+def calculate_load(deviation: float, dist: str, mean: float, replica: int):
     SAMPLE_SIZE = 10000  # Number of samples for load estimation
-    
-    match(dist):
+
+    match (dist):
         case DistributionType.exponential:
             sample = np.random.exponential(mean, SAMPLE_SIZE)
         case DistributionType.normal:
@@ -19,7 +17,7 @@ def calculate_load(deviation: float,
             sample = np.random.gamma(deviation, mean, SAMPLE_SIZE)
         case DistributionType.constant | _:
             sample = [mean for _ in range(SAMPLE_SIZE)]
-    
+
     load = np.mean(sample) / replica
-    
+
     return load

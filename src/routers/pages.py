@@ -11,18 +11,13 @@ templates = Jinja2Templates(directory="src/templates")
 
 @router.get("/")
 async def index(request: Request):
-    return templates.TemplateResponse(
-        request=request, name="index.html", context={}
-    )
+    return templates.TemplateResponse(request=request, name="index.html", context={})
 
 
 @router.post("/results")
 async def results(request: Request):
     data = decode(await request.body())
-    
+
     # its dumb and stupid but  r e a d a b i l i t y
-    ctx = {
-        "results": data["results"],
-        "log": data["log"]
-    }
+    ctx = {"results": data["results"], "log": data["log"]}
     return templates.TemplateResponse(request=request, name="results.html", context=ctx)

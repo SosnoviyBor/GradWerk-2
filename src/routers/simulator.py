@@ -16,12 +16,12 @@ async def simulate(request: Request):
     simtime = float(body["simtime"])
     log_max_size = int(body["log_max_size"])
     assert simtime > 0
-    
+
     elements = create_elements(model)
     print("Modeling started!")
     simdata = Model(elements).simulate(simtime, log_max_size)
     print("Modeling ended!")
-    
+
     return simdata
 
 
@@ -29,10 +29,12 @@ async def simulate(request: Request):
 async def load(request: Request):
     body = await request.json()
     data = body["data"]
-    
-    load = calculate_load(float(data["deviation"]),
-                         parse_dist(data["dist"]),
-                         float(data["mean"]),
-                         int(data["replica"]))
-    
+
+    load = calculate_load(
+        float(data["deviation"]),
+        parse_dist(data["dist"]),
+        float(data["mean"]),
+        int(data["replica"]),
+    )
+
     return load
