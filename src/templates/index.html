@@ -10,8 +10,7 @@ Model's Construct
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
   integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-  integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-  crossorigin="anonymous"></script>
+  integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 <!-- drawflow -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jerosoler/Drawflow@0.0.48/dist/drawflow.min.css">
 <script src="https://cdn.jsdelivr.net/gh/jerosoler/Drawflow/dist/drawflow.min.js"></script>
@@ -32,7 +31,7 @@ Model's Construct
 
 
 {% block header %}
-<h2>Model's Construct</h2>
+<h2 id="index-heading">Model's Construct</h2>
 <div class="github-link">
   <a href="https://github.com/SosnoviyBor/GradWerk-2" target="_blank">
     <i class="fab fa-github fa-3x"></i>
@@ -43,26 +42,20 @@ Model's Construct
 
 {% block wrapper %}
 <div class="col">
-  <div class="drag-drawflow" draggable="true" data-node="welcome">
-    <i class="fa-solid fa-thumbtack"></i><span> Welcome message</span>
+  <div class="drag-drawflow node-btn" draggable="true" data-node="welcome">
+    <i class="fa-solid fa-thumbtack node-icon"></i><span class="node-label">Welcome</span>
   </div>
-  <div class="drag-drawflow" draggable="true" data-node="userinput">
-    <i class="fa-solid fa-arrow-right-to-bracket"></i><span> User input</span>
+  <div class="drag-drawflow node-btn" draggable="true" data-node="comment">
+    <i class="fa-solid fa-comment node-icon"></i><span class="node-label">Comment</span>
   </div>
-  <div class="drag-drawflow" draggable="true" data-node="useroutput">
-    <i class="fa-solid fa-arrow-right-from-bracket"></i><span> User output</span>
+  <div class="drag-drawflow node-btn" draggable="true" data-node="create">
+    <i class="fa-solid fa-plus node-icon"></i><span class="node-label">Create</span>
   </div>
-  <div class="drag-drawflow" draggable="true" data-node="frontend">
-    <i class="fa-solid fa-computer"></i><span> Frontend</span>
+  <div class="drag-drawflow node-btn" draggable="true" data-node="process">
+    <i class="fa-solid fa-gears node-icon"></i><span class="node-label">Process</span>
   </div>
-  <div class="drag-drawflow" draggable="true" data-node="backend">
-    <i class="fa-solid fa-server"></i><span> Backend</span>
-  </div>
-  <div class="drag-drawflow" draggable="true" data-node="database">
-    <i class="fa-solid fa-database"></i><span> Database</span>
-  </div>
-  <div class="drag-drawflow" draggable="true" data-node="comment">
-    <i class="fa-solid fa-comment"></i><span> Comment</span>
+  <div class="drag-drawflow node-btn" draggable="true" data-node="dispose">
+    <i class="fa-solid fa-trash node-icon"></i><span class="node-label">Dispose</span>
   </div>
 
   <div class="options" draggable="false">
@@ -78,7 +71,7 @@ Model's Construct
 <div class="col-right">
   <div id="drawflow">
     <div id="btn-import" class="btn-top">
-      <input id="import-input" type="file" accept=".json" style="display:none"/>
+      <input id="import-input" type="file" accept=".json" style="display:none" />
       Import
     </div>
     <div id="btn-export" class="btn-top">Export</div>

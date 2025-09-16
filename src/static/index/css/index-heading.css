@@ -1,0 +1,38 @@
+/* GitHub link in header */
+.github-link {
+    position: absolute;
+    top: 50%;
+    right: 24px;
+    transform: translateY(-50%);
+    color: black;
+    z-index: 2;
+}
+
+/* index-heading styles */
+.index-heading,
+#index-heading {
+    font-weight: bold;
+    font-style: italic;
+    text-align: left;
+    margin: 0;
+    padding: 0;
+    font-size: 2.3rem;
+    font-family: 'Roboto', Arial, sans-serif;
+    background: linear-gradient(90deg, #2193b0 0%, #6dd5ed 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    opacity: 0;
+    animation: heading-fadein 0.5s cubic-bezier(.68, -0.55, .27, 1.55) forwards;
+    position: relative;
+}
+
+@keyframes heading-fadein {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}

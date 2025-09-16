@@ -1,0 +1,64 @@
+/* Drawflow top buttons */
+.btn-top {
+    float: right;
+    position: absolute;
+    color: white;
+    font-weight: bold;
+    background: #4ea9ff;
+    border: 1px solid #0e5ba3;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    z-index: 5;
+}
+
+#btn-export {
+    top: 10px;
+    right: 10px;
+}
+
+#btn-import {
+    top: 10px;
+    right: 85px;
+}
+
+#btn-clear {
+    top: 10px;
+    right: 161px;
+    background: #e3195a;
+    border: 1px solid #96015b;
+}
+
+/* col-right (canvas) styles */
+.col-right {
+    flex: 1 1 auto;
+    height: 100%;
+    min-width: 0;
+    position: relative;
+}
+
+/* The sidebar (.col) is 200px, so col-right should fill the rest */
+#drawflow {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: var(--background-color);
+    background-size: 25px 25px;
+    background-image:
+        linear-gradient(to right, #f1f1f1 1px, transparent 1px),
+        linear-gradient(to bottom, #f1f1f1 1px, transparent 1px);
+}
+
+@media only screen and (max-width: 768px) {
+    .col {
+        width: 50px;
+    }
+
+    .col .drag-drawflow span {
+        display: none;
+    }
+
+    #drawflow {
+        width: calc(100vw - 51px);
+    }
+}

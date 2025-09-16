@@ -1,0 +1,62 @@
+.textarea-comment {
+    resize: none;
+}
+
+/* Sidebar and options styles */
+.drag-drawflow {
+    line-height: 50px;
+    border-bottom: 1px solid var(--border-color);
+    padding-left: 20px;
+    cursor: move;
+    user-select: none;
+}
+
+.options {
+    line-height: 50px;
+    border-bottom: 1px solid var(--border-color);
+    padding-left: 20px;
+}
+
+.options-inp {
+    width: 150px;
+    height: 40px;
+}
+
+.options-p {
+    margin-bottom: 0px;
+}
+
+#start {
+    width: 150px;
+    margin-top: 30px;
+    margin-bottom: 15px;
+}
+
+/* col (sidebar) styles */
+.col {
+    overflow: auto;
+    width: 200px;
+    min-width: 200px;
+    max-width: 200px;
+    flex: 0 0 200px;
+    height: 100%;
+    border-right: 1px solid var(--border-color);
+}
+
+.node-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.node-icon {
+    min-width: 22px;
+    text-align: center;
+    font-size: 1.1em;
+    flex-shrink: 0;
+}
+
+.node-label {
+    display: inline-block;
+    min-width: 90px;
+}
