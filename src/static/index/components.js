@@ -63,7 +63,7 @@ class CommonElements {
 
     static modal(elements) {
         return `
-            <div class="box dbclickbox" data-throughput="0">
+            <div class="box dbclickbox" data-load="0">
                 &nbsp;
                 <div class="modal" style="display:none">
                     <div class="modal-content">

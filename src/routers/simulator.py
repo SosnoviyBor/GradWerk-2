@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Request
 
 from src.routers.utils.element_parser import create_elements, parse_dist
-from src.routers.utils.throughput_calculator import calculate_throughput
+from src.routers.utils.load_calculator import calculate_load
 from src.modeler.model import Model
 
 
@@ -25,14 +25,14 @@ async def simulate(request: Request):
     return simdata
 
 
-@router.post("/throughput")
-async def throughput(request: Request):
+@router.post("/load")
+async def load(request: Request):
     body = await request.json()
     data = body["data"]
     
-    throughput = calculate_throughput(float(data["deviation"]),
-                                      parse_dist(data["dist"]),
-                                      float(data["mean"]),
-                                      int(data["replica"]))
+    load = calculate_load(float(data["deviation"]),
+                         parse_dist(data["dist"]),
+                         float(data["mean"]),
+                         int(data["replica"]))
     
-    return throughput
+    return load

@@ -2,7 +2,7 @@ import { editor } from "./main.js";
 import * as drawflow_handlers from "./handlers/drawflow.js"
 import * as button_handlers from "./handlers/buttons.js"
 import * as window_handlers from "./handlers/window.js"
-import * as node_throughput from "./handlers/nodes/throughput.js"
+import * as node_load from "./handlers/nodes/load.js"
 import * as node_simstarted from "./handlers/nodes/simstarted.js"
 import * as initializers from "./handlers/initializers.js"
 
@@ -49,12 +49,12 @@ editor.on('removeReroute',      id => console.log("Reroute removed " + id))
 editor.on('connectionCreated',  connection => {
     console.log('Connection created')
     console.log(connection)
-    node_throughput.calculateThroughputDifference()
+    node_load.calculateLoadDifference()
 })
 editor.on('connectionRemoved', connection => {
     console.log('Connection removed')
     console.log(connection)
-    node_throughput.calculateThroughputDifference()
+    node_load.calculateLoadDifference()
 })
 editor.on("nodeCreated", id => {
     initializers.nodeData(id)

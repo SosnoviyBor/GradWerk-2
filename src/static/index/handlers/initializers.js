@@ -1,5 +1,5 @@
 import { editor } from "../main.js"
-import * as node_throughput from "./nodes/throughput.js"
+import * as node_load from "./nodes/load.js"
 import * as node_modal from "./nodes/modal.js"
 import * as node_general from "./nodes/general.js"
 
@@ -17,7 +17,7 @@ export function nodeData(id) {
         }
     })
 
-    node_throughput.updateNodeThroughput({ target: content })
+    node_load.updateNodeLoad({ target: content })
 }
 
 
@@ -29,7 +29,7 @@ export function dblclickboxListeners(id) {
     box.addEventListener("dblclick", ev => node_modal.showModal(ev))
     box.querySelector(".modal-close").addEventListener("click", ev => {
         node_modal.closeModal(ev)
-        node_throughput.updateNodeThroughput(ev)
+    node_load.updateNodeLoad(ev)
     })
     box.querySelector(".df-name").addEventListener("change", ev => node_general.updateName(ev))
 }

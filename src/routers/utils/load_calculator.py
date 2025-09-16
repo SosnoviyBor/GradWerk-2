@@ -2,11 +2,11 @@ import numpy as np
 
 from src.modeler.utils.consts import DistributionType
 
-def calculate_throughput(deviation: float,
-                         dist: str,
-                         mean: float,
-                         replica: int):
-    SAMPLE_SIZE = 10000
+def calculate_load(deviation: float,
+                   dist: str,
+                   mean: float,
+                   replica: int):
+    SAMPLE_SIZE = 10000  # Number of samples for load estimation
     
     match(dist):
         case DistributionType.exponential:
@@ -20,6 +20,6 @@ def calculate_throughput(deviation: float,
         case DistributionType.constant | _:
             sample = [mean for _ in range(SAMPLE_SIZE)]
     
-    throughput = np.mean(sample) / replica
+    load = np.mean(sample) / replica
     
-    return throughput
+    return load
