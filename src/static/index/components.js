@@ -102,8 +102,8 @@ export const components = {
 
                 <p><u><b>Shortkeys:</b></u></p>
                 <p><b>Delete</b> == Remove selected node</p>
-                <p><b>Mouse Left Click</b> == Move</p>
-                <p><b>Mouse Right</b> == Delete Option</p>
+                <p><b>LMB Click</b> == Move</p>
+                <p><b>RMB Click</b> == Delete Option</p>
                 <p><b>Ctrl + Wheel</b> == Zoom</p>
             </div>
         </div>
