@@ -10,6 +10,8 @@
 - [numpy](https://github.com/numpy/numpy)
 - [Radon](https://github.com/rubik/radon)
 
+### Rust
+
 ### JavaScript
 
 - [Drawflow](https://github.com/jerosoler/Drawflow)
