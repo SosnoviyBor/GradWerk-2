@@ -39,15 +39,13 @@ class Model:
         # init measurements
         process = psutil.Process(os.getpid())
         # initialize CPU percent measurement
-        process.cpu_percent(interval=None)
         timer_start = perf_counter()
         
         self._mainloop(time, log_max_size)
         
         # finalize measurements
         timer_result = perf_counter() - timer_start
-        memory_usage = process.memory_info().rss / (1024 * 1024)
-        cpu_usage = max(process.cpu_percent(interval=None), 100)
+        memory_usage = process.memory_info().rss / (1024 * 1024) # in MB
         
         self._log_sim_results()
         # trim trailing newline
@@ -57,7 +55,6 @@ class Model:
             "log": self.log,
             "time": timer_result,
             "memory": memory_usage,
-            "cpu": cpu_usage,
             "iterations": self.iteration
         }
 
