@@ -52,11 +52,44 @@ Simuation results
   </div>
 </div>
 
+<!-- Computation Statistics -->
+<div id="system-usage-logbox" class="system-usage-outer mb-4">
+  <div class="system-usage-heading">- Computation Statistics -</div>
+  <div class="resourcebox">
+    <div class="resource-table-card">
+      <table class="resource-table">
+        <tbody>
+          <tr>
+            <td class="resource-label"><strong>CPU Usage:</strong></td>
+            <td class="resource-value">{{ cpu | round(2) }} %</td>
+          </tr>
+          <tr>
+            <td class="resource-label"><strong>Memory Usage:</strong></td>
+            <td class="resource-value">{{ memory | round(2) }} MB</td>
+          </tr>
+          <tr>
+            <td class="resource-label"><strong>Computing Time:</strong></td>
+            <td class="resource-value">{{ time | round(4) }} seconds</td>
+          </tr>
+          <tr>
+            <td class="resource-label"><strong>Total events:</strong></td>
+            <td class="resource-value">{{ iterations }}</td>
+          </tr>
+          <tr>
+            <td class="resource-label"><strong>Events/second:</strong></td>
+            <td class="resource-value">{{ (iterations / time) | round(2) }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
 <!-- Logs Section -->
 <div id="logs">
   <!-- Simulation Start Log -->
   <div id="logs-first" class="logbox-outer">
-    <div class="logbox-heading">Simulation Start Log</div>
+    <div class="logbox-heading">- Simulation Start Log -</div>
     <div class="logbox">
       {% for message in log.first %}
       {% for line in message %}
@@ -71,7 +104,7 @@ Simuation results
   </div>
   <!-- Simulation End Log -->
   <div id="logs-last" class="logbox-outer">
-    <div class="logbox-heading">Simulation End Log</div>
+    <div class="logbox-heading">- Simulation End Log -</div>
     <div class="logbox">
       {% for message in log.last %}
       {% for line in message %}

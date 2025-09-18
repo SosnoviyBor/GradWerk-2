@@ -9,6 +9,7 @@
 - [Uvicorn](https://github.com/encode/uvicorn)
 - [numpy](https://github.com/numpy/numpy)
 - [Radon](https://github.com/rubik/radon)
+- [psutil](https://github.com/giampaolo/psutil)
 
 ### Rust
 

@@ -1,6 +1,7 @@
 from typing import List
 from sys import maxsize
 from time import perf_counter
+import psutil, os
 
 from src.modeler.components.element import Element
 from src.modeler.components.create import Create
@@ -23,15 +24,44 @@ class Model:
             results: dict[ check _collect_sim_summary() for details ],
             log: [str],
             time: float,
+            memory: float,
+            cpu: float,
+            iterations: int,
         }
         """
-        self.iteration = 1
+        # reset model state
+        self.iteration = 0
         self.log["first"] = [
             f"There are {len(self.elements)} elements in the simulation"
         ]
         self.log["last"] = []
+        
+        # init measurements
+        process = psutil.Process(os.getpid())
+        # initialize CPU percent measurement
+        process.cpu_percent(interval=None)
         timer_start = perf_counter()
+        
+        self._mainloop(time, log_max_size)
+        
+        # finalize measurements
+        timer_result = perf_counter() - timer_start
+        memory_usage = process.memory_info().rss / (1024 * 1024)
+        cpu_usage = max(process.cpu_percent(interval=None), 100)
+        
+        self._log_sim_results()
+        # trim trailing newline
+        self.log["last"][0] = self.log["last"][0][1:]
+        return {
+            "results": self._collect_sim_summary(),
+            "log": self.log,
+            "time": timer_result,
+            "memory": memory_usage,
+            "cpu": cpu_usage,
+            "iterations": self.iteration
+        }
 
+    def _mainloop(self, time: float, log_max_size: int) -> None:
         # thats it
         # thats the whole algorithm for ya
         while self.tcurr < time:
@@ -53,19 +83,9 @@ class Model:
             for element in self.elements:
                 if element.get_tnext() == self.tcurr:
                     element.out_act()
-
-            self._log_event(event_id, log_max_size)
+            # logging
             self.iteration += 1
-
-        timer_result = perf_counter() - timer_start
-        self._log_sim_results()
-        # trim trailing newline
-        self.log["last"][0] = self.log["last"][0][1:]
-        return {
-            "results": self._collect_sim_summary(),
-            "log": self.log,
-            "time": timer_result,
-        }
+            self._log_event(event_id, log_max_size)
 
     def _log_event(self, event_id: int, log_max_size: int) -> None:
         # generate message
