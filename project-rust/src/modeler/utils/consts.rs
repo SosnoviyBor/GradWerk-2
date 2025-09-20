@@ -11,3 +11,10 @@ pub enum DistributionType {
     Erlang,
     Constant,
 }
+
+#[derive(PartialEq, Eq)]
+pub enum ElementType {
+    Create,
+    Process,
+    Dispose,
+}
