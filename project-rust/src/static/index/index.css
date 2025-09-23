@@ -1,0 +1,131 @@
+@import url('./css/index-heading.css');
+@import url('./css/col.css');
+@import url('./css/col-right.css');
+@import url('./css/sim-started-overlay.css');
+@import url('./css/drawflow.css');
+
+
+/* Root and global layout styles */
+:root {
+  --border-color: #cacaca;
+  --background-color: #ffffff;
+  --background-box-title: #f7f7f7;
+}
+
+html,
+body {
+  margin: 0px;
+  padding: 0px;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  font-family: 'Roboto', sans-serif;
+}
+
+header {
+  height: 66px;
+  border-bottom: 1px solid var(--border-color);
+  padding-left: 20px;
+}
+
+header h2 {
+  margin: 0px;
+  line-height: 66px;
+}
+
+header a {
+  color: black;
+}
+
+.wrapper {
+  width: 100%;
+  height: calc(100vh - 67px);
+  display: flex;
+}
+
+.col {
+  overflow: auto;
+  width: 200px;
+  height: 100%;
+  border-right: 1px solid var(--border-color);
+}
+
+.drag-drawflow {
+  line-height: 50px;
+  border-bottom: 1px solid var(--border-color);
+  padding-left: 20px;
+  cursor: move;
+  user-select: none;
+}
+
+.options {
+  line-height: 50px;
+  border-bottom: 1px solid var(--border-color);
+  padding-left: 20px;
+}
+
+.menu {
+  position: absolute;
+  height: 40px;
+  display: block;
+  background: white;
+  width: 100%;
+}
+
+.menu ul {
+  padding: 0px;
+  margin: 0px;
+  line-height: 40px;
+}
+
+.menu ul li {
+  display: inline-block;
+  margin-left: 10px;
+  border-right: 1px solid var(--border-color);
+  padding-right: 10px;
+  line-height: 40px;
+  cursor: pointer;
+}
+
+.menu ul li.selected {
+  font-weight: bold;
+}
+
+.btn-top {
+  float: right;
+  position: absolute;
+  color: white;
+  font-weight: bold;
+  background: #4ea9ff;
+  border: 1px solid #0e5ba3;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  z-index: 5;
+
+}
+
+#btn-export {
+  top: 10px;
+  right: 10px;
+}
+
+#btn-import {
+  top: 10px;
+  right: 85px;
+}
+
+#btn-clear {
+  top: 10px;
+  right: 161px;
+  background: #e3195a;
+  border: 1px solid #96015b;
+}
+
+.swal-wide {
+  width: 80% !important;
+}
+
+#header {
+  position: relative;
+}

@@ -1,0 +1,5 @@
+/* Modularized: see css/ directory for all results styles */
+@import url("./css/charts.css");
+@import url("./css/heading.css");
+@import url("./css/logs.css");
+@import url("./css/resource-table.css");

@@ -1,20 +1,44 @@
-mod modeler{
-    pub mod components{
+mod modeler {
+    pub mod components {
         pub mod create;
+        pub mod dispose;
         pub mod element;
         pub mod process;
-        pub mod dispose;
     }
     pub mod utils {
         pub mod consts;
-        pub mod shortcuts;
         pub mod random;
+        pub mod shortcuts;
     }
     pub mod model;
 }
+mod routers {
+    pub mod utils {
+        pub mod element_parser;
+        pub mod load_calculator;
+        pub mod result_decoder;
+    }
+    pub mod pages;
+    pub mod simulator;
+}
 
-fn main() {
-    modeler::components::element::Element::new(1,1.0, modeler::utils::consts::ElementType::Create);
-    modeler::components::element::Element::new(1,1.0, modeler::utils::consts::ElementType::Process);
-    modeler::components::element::Element::new(1,1.0, modeler::utils::consts::ElementType::Dispose);
+#[macro_use]
+extern crate rocket;
+
+use crate::routers::pages::{index, results};
+use crate::routers::simulator::{load, simulate};
+use rocket::fs::{FileServer, relative};
+use rocket_dyn_templates::Template;
+
+#[launch]
+fn rocket() -> _ {
+    rocket::build()
+        // pages
+        .mount("/", routes![index])
+        .mount("/results", routes![results])
+        .mount("/simulate", routes![simulate])
+        .mount("/load", routes![load])
+        // everything else
+        .mount("/static", FileServer::from(relative!("src/static")))
+        .attach(Template::fairing())
 }

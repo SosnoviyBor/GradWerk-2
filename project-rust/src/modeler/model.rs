@@ -66,7 +66,7 @@ impl Model {
             self.tnext = f64::INFINITY;
             let mut event_id = 0;
             for element in &mut self.elements {
-                if element.get_tnext() < self.tnext as f32 {
+                if element.get_tnext() < self.tnext as f64 {
                     self.tnext = element.get_tnext() as f64;
                     event_id = element.id;
                 }
@@ -75,13 +75,13 @@ impl Model {
             let tcurr_old = self.tcurr;
             self.tcurr = self.tnext;
             for element in &mut self.elements {
-                element.do_statistics((self.tcurr - tcurr_old) as f32);
-                element.tcurr = self.tcurr as f32;
+                element.do_statistics((self.tcurr - tcurr_old) as f64);
+                element.tcurr = self.tcurr;
             }
             // move things between relevant elements queues
             self.elements[event_id].out_act();
             for element in &mut self.elements {
-                if element.get_tnext() == self.tcurr as f32 {
+                if element.get_tnext() == self.tcurr as f64 {
                     element.out_act();
                 }
             }
@@ -125,14 +125,14 @@ impl Model {
 
             if element.elem_type == ElementType::Process {
                 let failure_prob = if element.quantity + element.failure != 0 {
-                    element.failure as f32 / (element.failure + element.quantity) as f32
+                    element.failure as f64 / (element.failure + element.quantity) as f64
                 } else {
                     0.0
                 };
                 msg.push_str(&format!(
                     "Mean length of queue = {:.4}\n
                     Failure probability = {:.4}\n",
-                    element.mean_queue / self.tcurr as f32,
+                    element.mean_queue / self.tcurr,
                     failure_prob
                 ));
             }

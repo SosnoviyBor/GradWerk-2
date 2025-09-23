@@ -1,0 +1,572 @@
+{
+    "drawflow": {
+        "Home": {
+            "data": {
+                "13": {
+                    "id": 13,
+                    "name": "userinput",
+                    "data": {
+                        "name": "User",
+                        "dist": "constant",
+                        "mean": "10",
+                        "deviation": "1",
+                        "queuesize": "1",
+                        "order": "random",
+                        "replica": "2"
+                    },
+                    "class": "userinput",
+                    "html": "\n        <div>\n            <div class=\"title-box\">\n                <i class=\"fa-solid fa-arrow-right-to-bracket\"></i> User input\n            </div>\n            \n            <div class=\"box dbclickbox\" data-load=\"0\">\n                &nbsp;\n                <div class=\"modal\" style=\"display:none\">\n                    <div class=\"modal-content\">\n                        <span class=\"modal-close\">&times;</span>\n                        <br>\n                        \n            <p>Name</p>\n            <input class=\"df-name\" type=\"text\" value=\"User input\" df-name>\n            <br>\n        \n        <p>Distribution</p>\n        <select df-dist>\n            <option value=\"exponential\">Exponential</option>\n            <option value=\"normal\">Normal</option>\n            <option value=\"erlang\">Erlang</option>\n            <option value=\"uniform\">Uniform</option>\n            <option value=\"constant\">Constant</option>\n        </select>\n        <br>\n    \n        <p>Mean</p>\n        <input type=\"number\" value=\"1\" min=\"0.001\" df-mean>\n        <br>\n    \n        <p>Deviation</p>\n        <input type=\"number\" value=\"1\" min=\"0.001\" df-deviation>\n        <br>\n    \n        <p>Queue size</p>\n        <input type=\"number\" step=\"1\" value=\"1\" min=\"1\" df-queuesize>\n        <br>\n    \n        <p>Element order</p>\n        <select df-order>\n            <option value=\"balanced\">Balanced</option>\n            <option value=\"round robin\">Round robin</option>\n            <option value=\"random\">Random</option>\n        </select>\n        <br>\n    \n        <p>Replica count</p>\n        <input type=\"number\" df-replica value=\"1\" min=\"1\" step=\"1   \">\n        <br>\n    \n                    </div>\n                </div>\n            </div>\n        \n        </div>\n    ",
+                    "typenode": false,
+                    "inputs": {},
+                    "outputs": {
+                        "output_1": {
+                            "connections": [
+                                {
+                                    "node": "21",
+                                    "output": "input_1"
+                                },
+                                {
+                                    "node": "22",
+                                    "output": "input_1"
+                                },
+                                {
+                                    "node": "28",
+                                    "output": "input_1"
+                                }
+                            ]
+                        }
+                    },
+                    "pos_x": -35,
+                    "pos_y": 250.25
+                },
+                "16": {
+                    "id": 16,
+                    "name": "comment",
+                    "data": {
+                        "template": "Library website model"
+                    },
+                    "class": "comment",
+                    "html": "\n        <div>\n            <div class=\"title-box\"><i class=\"fa-solid fa-comment\"></i> Comment</div>\n            <div class=\"box\">\n                <textarea class=\"textarea-comment\" df-template></textarea>\n            </div>\n        </div>\n    ",
+                    "typenode": false,
+                    "inputs": {},
+                    "outputs": {},
+                    "pos_x": 1475.25,
+                    "pos_y": -36
+                },
+                "21": {
+                    "id": 21,
+                    "name": "frontend",
+                    "data": {
+                        "name": "Login form",
+                        "dist": "exponential",
+                        "mean": "20",
+                        "deviation": "7",
+                        "queuesize": "5",
+                        "order": "balanced",
+                        "replica": "2"
+                    },
+                    "class": "frontend",
+                    "html": "\n        <div>\n            <div class=\"title-box\">\n                <i class=\"fa-solid fa-computer\"></i> Frontend\n            </div>\n            \n            <div class=\"box dbclickbox\" data-load=\"0\">\n                &nbsp;\n                <div class=\"modal\" style=\"display:none\">\n                    <div class=\"modal-content\">\n                        <span class=\"modal-close\">&times;</span>\n                        <br>\n                        \n            <p>Name</p>\n            <input class=\"df-name\" type=\"text\" value=\"Frontend\" df-name>\n            <br>\n        \n        <p>Distribution</p>\n        <select df-dist>\n            <option value=\"exponential\">Exponential</option>\n            <option value=\"normal\">Normal</option>\n            <option value=\"erlang\">Erlang</option>\n            <option value=\"uniform\">Uniform</option>\n            <option value=\"constant\">Constant</option>\n        </select>\n        <br>\n    \n        <p>Mean</p>\n        <input type=\"number\" value=\"1\" min=\"0.001\" df-mean>\n        <br>\n    \n        <p>Deviation</p>\n        <input type=\"number\" value=\"1\" min=\"0.001\" df-deviation>\n        <br>\n    \n        <p>Queue size</p>\n        <input type=\"number\" step=\"1\" value=\"1\" min=\"1\" df-queuesize>\n        <br>\n    \n        <p>Element order</p>\n        <select df-order>\n            <option value=\"balanced\">Balanced</option>\n            <option value=\"round robin\">Round robin</option>\n            <option value=\"random\">Random</option>\n        </select>\n        <br>\n    \n        <p>Replica count</p>\n        <input type=\"number\" df-replica value=\"1\" min=\"1\" step=\"1   \">\n        <br>\n    \n                    </div>\n                </div>\n            </div>\n        \n        </div>\n    ",
+                    "typenode": false,
+                    "inputs": {
+                        "input_1": {
+                            "connections": [
+                                {
+                                    "node": "13",
+                                    "input": "output_1"
+                                },
+                                {
+                                    "node": "24",
+                                    "input": "output_1"
+                                }
+                            ]
+                        }
+                    },
+                    "outputs": {
+                        "output_1": {
+                            "connections": [
+                                {
+                                    "node": "26",
+                                    "output": "input_1"
+                                }
+                            ]
+                        }
+                    },
+                    "pos_x": 982.25,
+                    "pos_y": 241
+                },
+                "22": {
+                    "id": 22,
+                    "name": "frontend",
+                    "data": {
+                        "name": "Register form",
+                        "dist": "exponential",
+                        "mean": "50",
+                        "deviation": "10",
+                        "queuesize": "5",
+                        "order": "balanced",
+                        "replica": "2"
+                    },
+                    "class": "frontend",
+                    "html": "\n        <div>\n            <div class=\"title-box\">\n                <i class=\"fa-solid fa-computer\"></i> Frontend\n            </div>\n            \n            <div class=\"box dbclickbox\" data-load=\"0\">\n                &nbsp;\n                <div class=\"modal\" style=\"display:none\">\n                    <div class=\"modal-content\">\n                        <span class=\"modal-close\">&times;</span>\n                        <br>\n                        \n            <p>Name</p>\n            <input class=\"df-name\" type=\"text\" value=\"Frontend\" df-name>\n            <br>\n        \n        <p>Distribution</p>\n        <select df-dist>\n            <option value=\"exponential\">Exponential</option>\n            <option value=\"normal\">Normal</option>\n            <option value=\"erlang\">Erlang</option>\n            <option value=\"uniform\">Uniform</option>\n            <option value=\"constant\">Constant</option>\n        </select>\n        <br>\n    \n        <p>Mean</p>\n        <input type=\"number\" value=\"1\" min=\"0.001\" df-mean>\n        <br>\n    \n        <p>Deviation</p>\n        <input type=\"number\" value=\"1\" min=\"0.001\" df-deviation>\n        <br>\n    \n        <p>Queue size</p>\n        <input type=\"number\" step=\"1\" value=\"1\" min=\"1\" df-queuesize>\n        <br>\n    \n        <p>Element order</p>\n        <select df-order>\n            <option value=\"balanced\">Balanced</option>\n            <option value=\"round robin\">Round robin</option>\n            <option value=\"random\">Random</option>\n        </select>\n        <br>\n    \n        <p>Replica count</p>\n        <input type=\"number\" df-replica value=\"1\" min=\"1\" step=\"1   \">\n        <br>\n    \n                    </div>\n                </div>\n            </div>\n        \n        </div>\n    ",
+                    "typenode": false,
+                    "inputs": {
+                        "input_1": {
+                            "connections": [
+                                {
+                                    "node": "13",
+                                    "input": "output_1"
+                                }
+                            ]
+                        }
+                    },
+                    "outputs": {
+                        "output_1": {
+                            "connections": [
+                                {
+                                    "node": "25",
+                                    "output": "input_1"
+                                }
+                            ]
+                        }
+                    },
+                    "pos_x": 216.25,
+                    "pos_y": 128.75
+                },
+                "24": {
+                    "id": 24,
+                    "name": "database",
+                    "data": {
+                        "name": "Add new user to DB",
+                        "dist": "erlang",
+                        "mean": "1",
+                        "deviation": "1",
+                        "queuesize": "5",
+                        "order": "balanced",
+                        "replica": "1"
+                    },
+                    "class": "database",
+                    "html": "\n        <div>\n            <div class=\"title-box\">\n                <i class=\"fa-solid fa-database\"></i> Database\n            </div>\n            \n            <div class=\"box dbclickbox\" data-load=\"0\">\n                &nbsp;\n                <div class=\"modal\" style=\"display:none\">\n                    <div class=\"modal-content\">\n                        <span class=\"modal-close\">&times;</span>\n                        <br>\n                        \n            <p>Name</p>\n            <input class=\"df-name\" type=\"text\" value=\"Database\" df-name>\n            <br>\n        \n        <p>Distribution</p>\n        <select df-dist>\n            <option value=\"exponential\">Exponential</option>\n            <option value=\"normal\">Normal</option>\n            <option value=\"erlang\">Erlang</option>\n            <option value=\"uniform\">Uniform</option>\n            <option value=\"constant\">Constant</option>\n        </select>\n        <br>\n    \n        <p>Mean</p>\n        <input type=\"number\" value=\"1\" min=\"0.001\" df-mean>\n        <br>\n    \n        <p>Deviation</p>\n        <input type=\"number\" value=\"1\" min=\"0.001\" df-deviation>\n        <br>\n    \n        <p>Queue size</p>\n        <input type=\"number\" step=\"1\" value=\"1\" min=\"1\" df-queuesize>\n        <br>\n    \n        <p>Element order</p>\n        <select df-order>\n            <option value=\"balanced\">Balanced</option>\n            <option value=\"round robin\">Round robin</option>\n            <option value=\"random\">Random</option>\n        </select>\n        <br>\n    \n        <p>Replica count</p>\n        <input type=\"number\" df-replica value=\"1\" min=\"1\" step=\"1   \">\n        <br>\n    \n                    </div>\n                </div>\n            </div>\n        \n        </div>\n    ",
+                    "typenode": false,
+                    "inputs": {
+                        "input_1": {
+                            "connections": [
+                                {
+                                    "node": "25",
+                                    "input": "output_1"
+                                }
+                            ]
+                        }
+                    },
+                    "outputs": {
+                        "output_1": {
+                            "connections": [
+                                {
+                                    "node": "21",
+                                    "output": "input_1"
+                                }
+                            ]
+                        }
+                    },
+                    "pos_x": 703,
+                    "pos_y": 124.75
+                },
+                "25": {
+                    "id": 25,
+                    "name": "backend",
+                    "data": {
+                        "name": "Register validation",
+                        "dist": "constant",
+                        "mean": "3",
+                        "deviation": "1",
+                        "queuesize": "5",
+                        "order": "balanced",
+                        "replica": "1"
+                    },
+                    "class": "backend",
+                    "html": "\n        <div>\n            <div class=\"title-box\">\n                <i class=\"fa-solid fa-server\"></i> Backend\n            </div>\n            \n            <div class=\"box dbclickbox\" data-load=\"0\">\n                &nbsp;\n                <div class=\"modal\" style=\"display:none\">\n                    <div class=\"modal-content\">\n                        <span class=\"modal-close\">&times;</span>\n                        <br>\n                        \n            <p>Name</p>\n            <input class=\"df-name\" type=\"text\" value=\"Backend\" df-name>\n            <br>\n        \n        <p>Distribution</p>\n        <select df-dist>\n            <option value=\"exponential\">Exponential</option>\n            <option value=\"normal\">Normal</option>\n            <option value=\"erlang\">Erlang</option>\n            <option value=\"uniform\">Uniform</option>\n            <option value=\"constant\">Constant</option>\n        </select>\n        <br>\n    \n        <p>Mean</p>\n        <input type=\"number\" value=\"1\" min=\"0.001\" df-mean>\n        <br>\n    \n        <p>Deviation</p>\n        <input type=\"number\" value=\"1\" min=\"0.001\" df-deviation>\n        <br>\n    \n        <p>Queue size</p>\n        <input type=\"number\" step=\"1\" value=\"1\" min=\"1\" df-queuesize>\n        <br>\n    \n        <p>Element order</p>\n        <select df-order>\n            <option value=\"balanced\">Balanced</option>\n            <option value=\"round robin\">Round robin</option>\n            <option value=\"random\">Random</option>\n        </select>\n        <br>\n    \n        <p>Replica count</p>\n        <input type=\"number\" df-replica value=\"1\" min=\"1\" step=\"1   \">\n        <br>\n    \n                    </div>\n                </div>\n            </div>\n        \n        </div>\n    ",
+                    "typenode": false,
+                    "inputs": {
+                        "input_1": {
+                            "connections": [
+                                {
+                                    "node": "22",
+                                    "input": "output_1"
+                                }
+                            ]
+                        }
+                    },
+                    "outputs": {
+                        "output_1": {
+                            "connections": [
+                                {
+                                    "node": "24",
+                                    "output": "input_1"
+                                }
+                            ]
+                        }
+                    },
+                    "pos_x": 460,
+                    "pos_y": 129.25
+                },
+                "26": {
+                    "id": 26,
+                    "name": "database",
+                    "data": {
+                        "name": "Get user credentials",
+                        "dist": "erlang",
+                        "mean": "2.001",
+                        "deviation": "3.001",
+                        "queuesize": "5",
+                        "order": "balanced",
+                        "replica": "5"
+                    },
+                    "class": "database",
+                    "html": "\n        <div>\n            <div class=\"title-box\">\n                <i class=\"fa-solid fa-database\"></i> Database\n            </div>\n            \n            <div class=\"box dbclickbox\" data-load=\"0\">\n                &nbsp;\n                <div class=\"modal\" style=\"display:none\">\n                    <div class=\"modal-content\">\n                        <span class=\"modal-close\">&times;</span>\n                        <br>\n                        \n            <p>Name</p>\n            <input class=\"df-name\" type=\"text\" value=\"Database\" df-name>\n            <br>\n        \n        <p>Distribution</p>\n        <select df-dist>\n            <option value=\"exponential\">Exponential</option>\n            <option value=\"normal\">Normal</option>\n            <option value=\"erlang\">Erlang</option>\n            <option value=\"uniform\">Uniform</option>\n            <option value=\"constant\">Constant</option>\n        </select>\n        <br>\n    \n        <p>Mean</p>\n        <input type=\"number\" value=\"1\" min=\"0.001\" df-mean>\n        <br>\n    \n        <p>Deviation</p>\n        <input type=\"number\" value=\"1\" min=\"0.001\" df-deviation>\n        <br>\n    \n        <p>Queue size</p>\n        <input type=\"number\" step=\"1\" value=\"1\" min=\"1\" df-queuesize>\n        <br>\n    \n        <p>Element order</p>\n        <select df-order>\n            <option value=\"balanced\">Balanced</option>\n            <option value=\"round robin\">Round robin</option>\n            <option value=\"random\">Random</option>\n        </select>\n        <br>\n    \n        <p>Replica count</p>\n        <input type=\"number\" df-replica value=\"1\" min=\"1\" step=\"1   \">\n        <br>\n    \n                    </div>\n                </div>\n            </div>\n        \n        </div>\n    ",
+                    "typenode": false,
+                    "inputs": {
+                        "input_1": {
+                            "connections": [
+                                {
+                                    "node": "21",
+                                    "input": "output_1"
+                                }
+                            ]
+                        }
+                    },
+                    "outputs": {
+                        "output_1": {
+                            "connections": [
+                                {
+                                    "node": "27",
+                                    "output": "input_1"
+                                }
+                            ]
+                        }
+                    },
+                    "pos_x": 1237,
+                    "pos_y": 241.57142857142858
+                },
+                "27": {
+                    "id": 27,
+                    "name": "backend",
+                    "data": {
+                        "name": "User validation",
+                        "dist": "constant",
+                        "mean": "4.001",
+                        "deviation": "1.001",
+                        "queuesize": "5",
+                        "order": "balanced",
+                        "replica": "3"
+                    },
+                    "class": "backend",
+                    "html": "\n        <div>\n            <div class=\"title-box\">\n                <i class=\"fa-solid fa-server\"></i> Backend\n            </div>\n            \n            <div class=\"box dbclickbox\" data-load=\"0\">\n                &nbsp;\n                <div class=\"modal\" style=\"display:none\">\n                    <div class=\"modal-content\">\n                        <span class=\"modal-close\">&times;</span>\n                        <br>\n                        \n            <p>Name</p>\n            <input class=\"df-name\" type=\"text\" value=\"Backend\" df-name>\n            <br>\n        \n        <p>Distribution</p>\n        <select df-dist>\n            <option value=\"exponential\">Exponential</option>\n            <option value=\"normal\">Normal</option>\n            <option value=\"erlang\">Erlang</option>\n            <option value=\"uniform\">Uniform</option>\n            <option value=\"constant\">Constant</option>\n        </select>\n        <br>\n    \n        <p>Mean</p>\n        <input type=\"number\" value=\"1\" min=\"0.001\" df-mean>\n        <br>\n    \n        <p>Deviation</p>\n        <input type=\"number\" value=\"1\" min=\"0.001\" df-deviation>\n        <br>\n    \n        <p>Queue size</p>\n        <input type=\"number\" step=\"1\" value=\"1\" min=\"1\" df-queuesize>\n        <br>\n    \n        <p>Element order</p>\n        <select df-order>\n            <option value=\"balanced\">Balanced</option>\n            <option value=\"round robin\">Round robin</option>\n            <option value=\"random\">Random</option>\n        </select>\n        <br>\n    \n        <p>Replica count</p>\n        <input type=\"number\" df-replica value=\"1\" min=\"1\" step=\"1   \">\n        <br>\n    \n                    </div>\n                </div>\n            </div>\n        \n        </div>\n    ",
+                    "typenode": false,
+                    "inputs": {
+                        "input_1": {
+                            "connections": [
+                                {
+                                    "node": "26",
+                                    "input": "output_1"
+                                }
+                            ]
+                        }
+                    },
+                    "outputs": {
+                        "output_1": {
+                            "connections": [
+                                {
+                                    "node": "28",
+                                    "output": "input_1"
+                                }
+                            ]
+                        }
+                    },
+                    "pos_x": 1491.75,
+                    "pos_y": 244
+                },
+                "28": {
+                    "id": 28,
+                    "name": "frontend",
+                    "data": {
+                        "name": "Main page",
+                        "dist": "exponential",
+                        "mean": "7",
+                        "deviation": "3",
+                        "queuesize": "5",
+                        "order": "random",
+                        "replica": "2"
+                    },
+                    "class": "frontend",
+                    "html": "\n        <div>\n            <div class=\"title-box\">\n                <i class=\"fa-solid fa-computer\"></i> Frontend\n            </div>\n            \n            <div class=\"box dbclickbox\" data-load=\"0\">\n                &nbsp;\n                <div class=\"modal\" style=\"display:none\">\n                    <div class=\"modal-content\">\n                        <span class=\"modal-close\">&times;</span>\n                        <br>\n                        \n            <p>Name</p>\n            <input class=\"df-name\" type=\"text\" value=\"Frontend\" df-name>\n            <br>\n        \n        <p>Distribution</p>\n        <select df-dist>\n            <option value=\"exponential\">Exponential</option>\n            <option value=\"normal\">Normal</option>\n            <option value=\"erlang\">Erlang</option>\n            <option value=\"uniform\">Uniform</option>\n            <option value=\"constant\">Constant</option>\n        </select>\n        <br>\n    \n        <p>Mean</p>\n        <input type=\"number\" value=\"1\" min=\"0.001\" df-mean>\n        <br>\n    \n        <p>Deviation</p>\n        <input type=\"number\" value=\"1\" min=\"0.001\" df-deviation>\n        <br>\n    \n        <p>Queue size</p>\n        <input type=\"number\" step=\"1\" value=\"1\" min=\"1\" df-queuesize>\n        <br>\n    \n        <p>Element order</p>\n        <select df-order>\n            <option value=\"balanced\">Balanced</option>\n            <option value=\"round robin\">Round robin</option>\n            <option value=\"random\">Random</option>\n        </select>\n        <br>\n    \n        <p>Replica count</p>\n        <input type=\"number\" df-replica value=\"1\" min=\"1\" step=\"1   \">\n        <br>\n    \n                    </div>\n                </div>\n            </div>\n        \n        </div>\n    ",
+                    "typenode": false,
+                    "inputs": {
+                        "input_1": {
+                            "connections": [
+                                {
+                                    "node": "27",
+                                    "input": "output_1"
+                                },
+                                {
+                                    "node": "13",
+                                    "input": "output_1"
+                                }
+                            ]
+                        }
+                    },
+                    "outputs": {
+                        "output_1": {
+                            "connections": [
+                                {
+                                    "node": "35",
+                                    "output": "input_1"
+                                },
+                                {
+                                    "node": "30",
+                                    "output": "input_1"
+                                }
+                            ]
+                        }
+                    },
+                    "pos_x": 283,
+                    "pos_y": 481.57142857142856
+                },
+                "30": {
+                    "id": 30,
+                    "name": "frontend",
+                    "data": {
+                        "name": "Open book page",
+                        "dist": "exponential",
+                        "mean": "2.001",
+                        "deviation": "1",
+                        "queuesize": "5",
+                        "order": "balanced",
+                        "replica": "1"
+                    },
+                    "class": "frontend",
+                    "html": "\n        <div>\n            <div class=\"title-box\">\n                <i class=\"fa-solid fa-computer\"></i> Frontend\n            </div>\n            \n            <div class=\"box dbclickbox\" data-load=\"0\">\n                &nbsp;\n                <div class=\"modal\" style=\"display:none\">\n                    <div class=\"modal-content\">\n                        <span class=\"modal-close\">&times;</span>\n                        <br>\n                        \n            <p>Name</p>\n            <input class=\"df-name\" type=\"text\" value=\"Frontend\" df-name>\n            <br>\n        \n        <p>Distribution</p>\n        <select df-dist>\n            <option value=\"exponential\">Exponential</option>\n            <option value=\"normal\">Normal</option>\n            <option value=\"erlang\">Erlang</option>\n            <option value=\"uniform\">Uniform</option>\n            <option value=\"constant\">Constant</option>\n        </select>\n        <br>\n    \n        <p>Mean</p>\n        <input type=\"number\" value=\"1\" min=\"0.001\" df-mean>\n        <br>\n    \n        <p>Deviation</p>\n        <input type=\"number\" value=\"1\" min=\"0.001\" df-deviation>\n        <br>\n    \n        <p>Queue size</p>\n        <input type=\"number\" step=\"1\" value=\"1\" min=\"1\" df-queuesize>\n        <br>\n    \n        <p>Element order</p>\n        <select df-order>\n            <option value=\"balanced\">Balanced</option>\n            <option value=\"round robin\">Round robin</option>\n            <option value=\"random\">Random</option>\n        </select>\n        <br>\n    \n        <p>Replica count</p>\n        <input type=\"number\" df-replica value=\"1\" min=\"1\" step=\"1   \">\n        <br>\n    \n                    </div>\n                </div>\n            </div>\n        \n        </div>\n    ",
+                    "typenode": false,
+                    "inputs": {
+                        "input_1": {
+                            "connections": [
+                                {
+                                    "node": "28",
+                                    "input": "output_1"
+                                },
+                                {
+                                    "node": "36",
+                                    "input": "output_1"
+                                }
+                            ]
+                        }
+                    },
+                    "outputs": {
+                        "output_1": {
+                            "connections": [
+                                {
+                                    "node": "33",
+                                    "output": "input_1"
+                                }
+                            ]
+                        }
+                    },
+                    "pos_x": 1082.5714285714287,
+                    "pos_y": 482
+                },
+                "33": {
+                    "id": 33,
+                    "name": "database",
+                    "data": {
+                        "name": "Get book",
+                        "dist": "exponential",
+                        "mean": "1",
+                        "deviation": "1",
+                        "queuesize": "5",
+                        "order": "balanced",
+                        "replica": "1"
+                    },
+                    "class": "database",
+                    "html": "\n        <div>\n            <div class=\"title-box\">\n                <i class=\"fa-solid fa-database\"></i> Database\n            </div>\n            \n            <div class=\"box dbclickbox\" data-load=\"0\">\n                &nbsp;\n                <div class=\"modal\" style=\"display:none\">\n                    <div class=\"modal-content\">\n                        <span class=\"modal-close\">&times;</span>\n                        <br>\n                        \n            <p>Name</p>\n            <input class=\"df-name\" type=\"text\" value=\"Database\" df-name>\n            <br>\n        \n        <p>Distribution</p>\n        <select df-dist>\n            <option value=\"exponential\">Exponential</option>\n            <option value=\"normal\">Normal</option>\n            <option value=\"erlang\">Erlang</option>\n            <option value=\"uniform\">Uniform</option>\n            <option value=\"constant\">Constant</option>\n        </select>\n        <br>\n    \n        <p>Mean</p>\n        <input type=\"number\" value=\"1\" min=\"0.001\" df-mean>\n        <br>\n    \n        <p>Deviation</p>\n        <input type=\"number\" value=\"1\" min=\"0.001\" df-deviation>\n        <br>\n    \n        <p>Queue size</p>\n        <input type=\"number\" step=\"1\" value=\"1\" min=\"1\" df-queuesize>\n        <br>\n    \n        <p>Element order</p>\n        <select df-order>\n            <option value=\"balanced\">Balanced</option>\n            <option value=\"round robin\">Round robin</option>\n            <option value=\"random\">Random</option>\n        </select>\n        <br>\n    \n        <p>Replica count</p>\n        <input type=\"number\" df-replica value=\"1\" min=\"1\" step=\"1   \">\n        <br>\n    \n                    </div>\n                </div>\n            </div>\n        \n        </div>\n    ",
+                    "typenode": false,
+                    "inputs": {
+                        "input_1": {
+                            "connections": [
+                                {
+                                    "node": "30",
+                                    "input": "output_1"
+                                }
+                            ]
+                        }
+                    },
+                    "outputs": {
+                        "output_1": {
+                            "connections": [
+                                {
+                                    "node": "34",
+                                    "output": "input_1"
+                                }
+                            ]
+                        }
+                    },
+                    "pos_x": 1366,
+                    "pos_y": 488.25
+                },
+                "34": {
+                    "id": 34,
+                    "name": "useroutput",
+                    "data": {
+                        "name": "Dispose"
+                    },
+                    "class": "useroutput",
+                    "html": "\n        <div>\n            <div class=\"title-box\">\n                <i class=\"fa-solid fa-arrow-right-from-bracket\"></i> User output\n            </div>\n            \n            <div class=\"box dbclickbox\" data-load=\"0\">\n                &nbsp;\n                <div class=\"modal\" style=\"display:none\">\n                    <div class=\"modal-content\">\n                        <span class=\"modal-close\">&times;</span>\n                        <br>\n                        \n            <p>Name</p>\n            <input class=\"df-name\" type=\"text\" value=\"Dispose\" df-name>\n            <br>\n        \n                    </div>\n                </div>\n            </div>\n        \n        </div>\n    ",
+                    "typenode": false,
+                    "inputs": {
+                        "input_1": {
+                            "connections": [
+                                {
+                                    "node": "33",
+                                    "input": "output_1"
+                                },
+                                {
+                                    "node": "36",
+                                    "input": "output_1"
+                                }
+                            ]
+                        }
+                    },
+                    "outputs": {},
+                    "pos_x": 1635.5,
+                    "pos_y": 485.5
+                },
+                "35": {
+                    "id": 35,
+                    "name": "backend",
+                    "data": {
+                        "name": "Search",
+                        "dist": "uniform",
+                        "mean": "4",
+                        "deviation": "10",
+                        "queuesize": "5",
+                        "order": "balanced",
+                        "replica": "1"
+                    },
+                    "class": "backend",
+                    "html": "\n        <div>\n            <div class=\"title-box\">\n                <i class=\"fa-solid fa-server\"></i> Backend\n            </div>\n            \n            <div class=\"box dbclickbox\" data-load=\"0\">\n                &nbsp;\n                <div class=\"modal\" style=\"display:none\">\n                    <div class=\"modal-content\">\n                        <span class=\"modal-close\">&times;</span>\n                        <br>\n                        \n            <p>Name</p>\n            <input class=\"df-name\" type=\"text\" value=\"Backend\" df-name>\n            <br>\n        \n        <p>Distribution</p>\n        <select df-dist>\n            <option value=\"exponential\">Exponential</option>\n            <option value=\"normal\">Normal</option>\n            <option value=\"erlang\">Erlang</option>\n            <option value=\"uniform\">Uniform</option>\n            <option value=\"constant\">Constant</option>\n        </select>\n        <br>\n    \n        <p>Mean</p>\n        <input type=\"number\" value=\"1\" min=\"0.001\" df-mean>\n        <br>\n    \n        <p>Deviation</p>\n        <input type=\"number\" value=\"1\" min=\"0.001\" df-deviation>\n        <br>\n    \n        <p>Queue size</p>\n        <input type=\"number\" step=\"1\" value=\"1\" min=\"1\" df-queuesize>\n        <br>\n    \n        <p>Element order</p>\n        <select df-order>\n            <option value=\"balanced\">Balanced</option>\n            <option value=\"round robin\">Round robin</option>\n            <option value=\"random\">Random</option>\n        </select>\n        <br>\n    \n        <p>Replica count</p>\n        <input type=\"number\" df-replica value=\"1\" min=\"1\" step=\"1   \">\n        <br>\n    \n                    </div>\n                </div>\n            </div>\n        \n        </div>\n    ",
+                    "typenode": false,
+                    "inputs": {
+                        "input_1": {
+                            "connections": [
+                                {
+                                    "node": "28",
+                                    "input": "output_1"
+                                }
+                            ]
+                        }
+                    },
+                    "outputs": {
+                        "output_1": {
+                            "connections": [
+                                {
+                                    "node": "36",
+                                    "output": "input_1"
+                                }
+                            ]
+                        }
+                    },
+                    "pos_x": 566,
+                    "pos_y": 614.5714285714286
+                },
+                "36": {
+                    "id": 36,
+                    "name": "database",
+                    "data": {
+                        "name": "DB Search",
+                        "dist": "exponential",
+                        "mean": "1",
+                        "deviation": "1",
+                        "queuesize": "5",
+                        "order": "balanced",
+                        "replica": "1"
+                    },
+                    "class": "database",
+                    "html": "\n        <div>\n            <div class=\"title-box\">\n                <i class=\"fa-solid fa-database\"></i> Database\n            </div>\n            \n            <div class=\"box dbclickbox\" data-load=\"0\">\n                &nbsp;\n                <div class=\"modal\" style=\"display:none\">\n                    <div class=\"modal-content\">\n                        <span class=\"modal-close\">&times;</span>\n                        <br>\n                        \n            <p>Name</p>\n            <input class=\"df-name\" type=\"text\" value=\"Database\" df-name>\n            <br>\n        \n        <p>Distribution</p>\n        <select df-dist>\n            <option value=\"exponential\">Exponential</option>\n            <option value=\"normal\">Normal</option>\n            <option value=\"erlang\">Erlang</option>\n            <option value=\"uniform\">Uniform</option>\n            <option value=\"constant\">Constant</option>\n        </select>\n        <br>\n    \n        <p>Mean</p>\n        <input type=\"number\" value=\"1\" min=\"0.001\" df-mean>\n        <br>\n    \n        <p>Deviation</p>\n        <input type=\"number\" value=\"1\" min=\"0.001\" df-deviation>\n        <br>\n    \n        <p>Queue size</p>\n        <input type=\"number\" step=\"1\" value=\"1\" min=\"1\" df-queuesize>\n        <br>\n    \n        <p>Element order</p>\n        <select df-order>\n            <option value=\"balanced\">Balanced</option>\n            <option value=\"round robin\">Round robin</option>\n            <option value=\"random\">Random</option>\n        </select>\n        <br>\n    \n        <p>Replica count</p>\n        <input type=\"number\" df-replica value=\"1\" min=\"1\" step=\"1   \">\n        <br>\n    \n                    </div>\n                </div>\n            </div>\n        \n        </div>\n    ",
+                    "typenode": false,
+                    "inputs": {
+                        "input_1": {
+                            "connections": [
+                                {
+                                    "node": "35",
+                                    "input": "output_1"
+                                }
+                            ]
+                        }
+                    },
+                    "outputs": {
+                        "output_1": {
+                            "connections": [
+                                {
+                                    "node": "30",
+                                    "output": "input_1"
+                                },
+                                {
+                                    "node": "34",
+                                    "output": "input_1",
+                                    "points": [
+                                        {
+                                            "pos_x": 1551.3750457763672,
+                                            "pos_y": 668.5000228881836
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    },
+                    "pos_x": 829.75,
+                    "pos_y": 616
+                },
+                "37": {
+                    "id": 37,
+                    "name": "comment",
+                    "data": {
+                        "template": "User can either pick book form main page OR search it up"
+                    },
+                    "class": "comment",
+                    "html": "\n        <div>\n            <div class=\"title-box\"><i class=\"fa-solid fa-comment\"></i> Comment</div>\n            <div class=\"box\">\n                <textarea class=\"textarea-comment\" df-template></textarea>\n            </div>\n        </div>\n    ",
+                    "typenode": false,
+                    "inputs": {},
+                    "outputs": {},
+                    "pos_x": 281.25,
+                    "pos_y": 631
+                },
+                "38": {
+                    "id": 38,
+                    "name": "comment",
+                    "data": {
+                        "template": "The book might or might not be stored in the library"
+                    },
+                    "class": "comment",
+                    "html": "\n        <div>\n            <div class=\"title-box\"><i class=\"fa-solid fa-comment\"></i> Comment</div>\n            <div class=\"box\">\n                <textarea class=\"textarea-comment\" df-template></textarea>\n            </div>\n        </div>\n    ",
+                    "typenode": false,
+                    "inputs": {},
+                    "outputs": {},
+                    "pos_x": 1094.75,
+                    "pos_y": 699
+                },
+                "39": {
+                    "id": 39,
+                    "name": "comment",
+                    "data": {
+                        "template": "User might be unregistered, unauthed or authed"
+                    },
+                    "class": "comment",
+                    "html": "\n        <div>\n            <div class=\"title-box\"><i class=\"fa-solid fa-comment\"></i> Comment</div>\n            <div class=\"box\">\n                <textarea class=\"textarea-comment\" df-template></textarea>\n            </div>\n        </div>\n    ",
+                    "typenode": false,
+                    "inputs": {},
+                    "outputs": {},
+                    "pos_x": -31.75,
+                    "pos_y": 36
+                }
+            }
+        }
+    }
+}

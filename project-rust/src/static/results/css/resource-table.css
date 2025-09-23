@@ -1,0 +1,104 @@
+.system-usage-outer {
+    font-family: Consolas;
+    border: 2px solid #4e5d6c;
+    border-radius: 12px;
+    background: #232526;
+    background: linear-gradient(135deg, #232526 0%, #414345 100%);
+    box-shadow: 0 4px 24px 0 rgba(30, 40, 60, 0.12);
+    overflow: hidden;
+    margin-bottom: 0;
+    min-height: 0;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 30px;
+}
+
+.system-usage-heading {
+    background: #232526;
+    color: #fff;
+    font-weight: 600;
+    font-size: 1.1rem;
+    letter-spacing: 0.03em;
+    padding: 10px 18px 8px 18px;
+    border-radius: 12px 12px 0 0;
+    border-bottom: 1px solid #4e5d6c;
+    margin: 0;
+    background: linear-gradient(90deg, #a8ff60 0%, #50c9c3 50%, #232526 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+    filter: none;
+    transition: letter-spacing 0.2s;
+    animation: heading-pop 0.7s cubic-bezier(.68, -0.55, .27, 1.55);
+    position: relative;
+}
+
+.resourcebox {
+    min-height: 0;
+    background: #181c20;
+    color: #a8ff60;
+    padding: 18px 18px 18px 18px;
+    border-radius: 0 0 12px 12px;
+    font-size: 1rem;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.resource-table-card {
+    display: inline-block;
+    width: auto;
+    padding: 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+.resource-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 8px;
+    background: transparent;
+}
+
+.resource-table td {
+    padding: 8px 16px;
+    background: #23272b;
+    color: #a8ff60;
+    border-radius: 6px;
+    font-size: 1rem;
+    border: none;
+}
+
+.resource-label {
+    text-align: right;
+    font-weight: 600;
+    background: transparent;
+    color: #a8ff60;
+    border: none;
+}
+
+.resource-label,
+.resource-value {
+    min-width: fit-content;
+    width: 200px;
+    box-sizing: border-box;
+}
+
+.resource-label {
+    text-align: right;
+    font-weight: 600;
+    background: transparent;
+    color: #a8ff60;
+    border: none;
+}
+
+.resource-value {
+    text-align: left;
+    background: transparent;
+    color: #fff;
+    border: none;
+}

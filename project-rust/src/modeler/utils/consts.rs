@@ -1,9 +1,11 @@
+#[derive(Clone)]
 pub enum NextElementType {
     Balanced,
     RoundRobin,
     Random,
 }
 
+#[derive(Clone)]
 pub enum DistributionType {
     Exponential,
     Normal,
@@ -12,7 +14,7 @@ pub enum DistributionType {
     Constant,
 }
 
-#[derive(PartialEq, Eq)]
+#[derive(PartialEq, Eq, Clone)]
 pub enum ElementType {
     Create,
     Process,

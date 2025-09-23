@@ -36,7 +36,7 @@ pub fn get_summary(e: &Element, nearest_tnext: String) -> String {
     )
 }
 
-pub fn do_statistics(e: &mut Element, delta: f32) {
+pub fn do_statistics(e: &mut Element, delta: f64) {
     e.state_sum += e.state as u32 * delta as u32;
-    e.mean_queue += e.queue as f32 * delta;
+    e.mean_queue += e.queue as f64 * delta;
 }

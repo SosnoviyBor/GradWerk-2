@@ -1,0 +1,128 @@
+.swal-wide {
+    width: 80% !important;
+}
+
+/* Modal styles (global overlay/modal) */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 7;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: auto;
+    background-color: rgb(0, 0, 0);
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+.modal-content {
+    position: relative;
+    background-color: #fefefe;
+    margin: 5% auto;
+    /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 300px;
+    /* Could be more or less, depending on screen size */
+}
+
+/* The Close Button */
+.modal .close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+@media only screen and (max-width: 768px) {
+    .modal-content {
+        width: 80%;
+    }
+}
+
+/* sim-started-overlay styles */
+#sim-started-overlay {
+    color: #fff;
+    position: fixed;
+    z-index: 1000;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(20, 24, 32, 0.72);
+    backdrop-filter: blur(4px);
+    transition: background 0.3s;
+    opacity: 1;
+    pointer-events: auto;
+    animation: overlay-fadein 0.5s cubic-bezier(.4, 0, .2, 1);
+}
+
+#sim-started-overlay.fade-out {
+    animation: overlay-fadeout 0.22s cubic-bezier(.4, 0, .2, 1) forwards;
+    pointer-events: none;
+}
+
+@keyframes overlay-fadein {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes overlay-fadeout {
+    to {
+        opacity: 0;
+    }
+}
+
+#overlay-bg {
+    display: none;
+}
+
+#overlay-text {
+    min-width: 340px;
+    max-width: 90vw;
+    background: linear-gradient(135deg, #232526 0%, #414345 100%);
+    box-shadow: 0 8px 32px 0 rgba(30, 40, 60, 0.32);
+    padding: 36px 36px 28px 36px;
+    border-radius: 18px;
+    border: none;
+    text-align: center;
+    opacity: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+#overlay-text h1 {
+    font-size: 2.1rem;
+    font-weight: bold;
+    margin: 0 0 10px 0;
+    background: linear-gradient(90deg, #a8ff60 0%, #50c9c3 50%, #2193b0 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 0.01em;
+}
+
+#overlay-text h3 {
+    font-size: 1.15rem;
+    font-weight: 500;
+    margin: 0 0 12px 0;
+    color: #e0e0e0;
+}
+
+#overlay-text p {
+    font-size: 1rem;
+    color: #b0b0b0;
+    margin: 0;
+}

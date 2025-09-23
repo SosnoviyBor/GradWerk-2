@@ -1,4 +1,5 @@
 use ordered_float::OrderedFloat;
+use std::cmp::Reverse;
 use std::collections::BinaryHeap;
 use std::sync::atomic::{AtomicUsize, Ordering};
 
@@ -14,18 +15,19 @@ fn get_next_id() -> usize {
     NEXT_ID.fetch_add(1, Ordering::SeqCst)
 }
 
+#[derive(Clone)]
 pub struct Element {
     pub id: usize,
     pub name: String,
     pub worker_count: u32,
     pub elem_type: ElementType,
 
-    pub tnext: BinaryHeap<OrderedFloat<f32>>,
-    pub tcurr: f32,
+    pub tnext: BinaryHeap<Reverse<OrderedFloat<f64>>>,
+    pub tcurr: f64,
 
     pub distribution: DistributionType,
-    pub delay_mean: f32,
-    pub delay_dev: f32,
+    pub delay_mean: f64,
+    pub delay_dev: f64,
     pub k: u32,
 
     pub next_element_type: NextElementType,
@@ -35,19 +37,27 @@ pub struct Element {
     pub state: u32,
     pub queue: u32,
     pub quantity: u32,
-    pub average_load: f32,
+    pub average_load: f64,
 
     // process-specific fields
     pub max_queue: u32,
-    pub mean_queue: f32,
-    pub wait_start: f32,
-    pub wait_time: f32,
+    pub mean_queue: f64,
+    pub wait_start: f64,
+    pub wait_time: f64,
     pub failure: u32,
     pub state_sum: u32,
 }
 
 impl Element {
-    pub fn new(worker_count: u32, delay: f32, elem_type: ElementType) -> Self {
+    pub fn new(
+        worker_count: u32,
+        delay_mean: f64,
+        delay_dev: f64,
+        elem_type: ElementType,
+        distribution: DistributionType,
+        next_element_type: NextElementType,
+        k: u32,
+    ) -> Self {
         // prepare element data
         let id = get_next_id();
         let name;
@@ -64,11 +74,11 @@ impl Element {
             elem_type,
             tnext: BinaryHeap::new(),
             tcurr: 0.0,
-            distribution: DistributionType::Exponential,
-            delay_mean: delay,
-            delay_dev: 0.0,
-            k: 0,
-            next_element_type: NextElementType::Random,
+            distribution,
+            delay_mean,
+            delay_dev,
+            k,
+            next_element_type,
             next_elements: Vec::new(),
             round_robin_idx: 0,
             queue: 0,
@@ -86,39 +96,43 @@ impl Element {
         // initialize tnext based on element type
         match element.elem_type {
             ElementType::Create => element.put_tnext(0.00001),
-            ElementType::Process => element.put_tnext(f32::INFINITY),
-            ElementType::Dispose => element.put_tnext(f32::INFINITY),
+            ElementType::Process => element.put_tnext(f64::INFINITY),
+            ElementType::Dispose => element.put_tnext(f64::INFINITY),
         }
 
         element
     }
 
-    pub fn get_delay(&self) -> f32 {
+    pub fn get_delay(&self) -> f64 {
         match self.distribution {
-            DistributionType::Exponential => random::exponential(self.delay_mean as f64) as f32,
+            DistributionType::Exponential => random::exponential(self.delay_mean as f64),
             DistributionType::Normal => {
-                random::normal(self.delay_mean as f64, self.delay_dev as f64) as f32
+                random::normal(self.delay_mean as f64, self.delay_dev as f64)
             }
             DistributionType::Uniform => random::uniform(
                 self.delay_mean as f64 - self.delay_dev as f64,
                 self.delay_mean as f64 + self.delay_dev as f64,
-            ) as f32,
-            DistributionType::Erlang => random::erlang(self.delay_mean as f64, self.k) as f32,
+            ),
+            DistributionType::Erlang => random::erlang(self.delay_mean as f64, self.k),
             DistributionType::Constant => self.delay_mean,
         }
     }
 
-    pub fn get_tnext(&mut self) -> f32 {
-        self.tnext.peek().map(|v| (*v).into()).unwrap_or(f32::INFINITY)
+    pub fn get_tnext(&mut self) -> f64 {
+        self.tnext.peek().map_or(f64::INFINITY, |x| x.0.into_inner())
     }
 
-    fn set_next_element_type(&mut self, next_type: NextElementType, next_elements: Vec<Element>) {
+    pub fn set_next_elements(
+        &mut self,
+        next_type: NextElementType,
+        next_elements: Vec<Element>,
+    ) {
         self.next_element_type = next_type;
         self.next_elements = next_elements;
     }
 
-    pub fn put_tnext(&mut self, t: f32) {
-        self.tnext.push(OrderedFloat(t));
+    pub fn put_tnext(&mut self, t: f64) {
+        self.tnext.push(Reverse(OrderedFloat(t)));
     }
 
     pub fn pop_tnext(&mut self) {
@@ -143,8 +157,8 @@ impl Element {
 
     fn get_nearest_tnext(&mut self) -> String {
         let nearest_tnext = self.get_tnext();
-        if nearest_tnext != f32::INFINITY {
-            self.average_load = self.quantity as f32 / nearest_tnext;
+        if nearest_tnext != f64::INFINITY {
+            self.average_load = self.quantity as f64 / nearest_tnext as f64;
             format!("{:.4}", nearest_tnext)
         } else {
             String::from("maxval")
@@ -160,11 +174,11 @@ impl Element {
         }
     }
 
-    pub fn do_statistics(&mut self, delta: f32) {
+    pub fn do_statistics(&mut self, delta: f64) {
         match self.elem_type {
-            ElementType::Create => {},
+            ElementType::Create => {}
             ElementType::Process => process::do_statistics(self, delta),
-            ElementType::Dispose => {},
+            ElementType::Dispose => {}
         }
     }
 }
