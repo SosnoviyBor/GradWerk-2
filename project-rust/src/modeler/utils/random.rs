@@ -15,7 +15,7 @@ pub fn uniform(a: f64, b: f64) -> f64 {
     a + (b - a) * u
 }
 
-pub fn erlang(mean: f64, k: u32) -> f64 {
+pub fn erlang(mean: f64, k: usize) -> f64 {
     let mut product = 1.0;
     for _ in 0..k {
         let u: f64 = rand::random();

@@ -28,9 +28,8 @@ pub struct Element {
     pub distribution: DistributionType,
     pub delay_mean: f64,
     pub delay_dev: f64,
-    pub k: u32,
 
-    pub next_element_type: NextElementType,
+    pub next_element_type: Option<NextElementType>,
     pub next_elements: Vec<Element>,
     pub round_robin_idx: usize,
 
@@ -55,8 +54,8 @@ impl Element {
         delay_dev: f64,
         elem_type: ElementType,
         distribution: DistributionType,
-        next_element_type: NextElementType,
-        k: u32,
+        next_element_type: Option<NextElementType>,
+        queue: u32,
     ) -> Self {
         // prepare element data
         let id = get_next_id();
@@ -77,11 +76,10 @@ impl Element {
             distribution,
             delay_mean,
             delay_dev,
-            k,
             next_element_type,
             next_elements: Vec::new(),
             round_robin_idx: 0,
-            queue: 0,
+            queue,
             quantity: 0,
             average_load: 0.0,
             state: 0,
@@ -113,22 +111,13 @@ impl Element {
                 self.delay_mean as f64 - self.delay_dev as f64,
                 self.delay_mean as f64 + self.delay_dev as f64,
             ),
-            DistributionType::Erlang => random::erlang(self.delay_mean as f64, self.k),
+            DistributionType::Erlang => random::erlang(self.delay_mean as f64, self.delay_dev as usize),
             DistributionType::Constant => self.delay_mean,
         }
     }
 
     pub fn get_tnext(&mut self) -> f64 {
         self.tnext.peek().map_or(f64::INFINITY, |x| x.0.into_inner())
-    }
-
-    pub fn set_next_elements(
-        &mut self,
-        next_type: NextElementType,
-        next_elements: Vec<Element>,
-    ) {
-        self.next_element_type = next_type;
-        self.next_elements = next_elements;
     }
 
     pub fn put_tnext(&mut self, t: f64) {

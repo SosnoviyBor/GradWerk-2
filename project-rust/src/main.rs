@@ -35,9 +35,9 @@ fn rocket() -> _ {
     rocket::build()
         // pages
         .mount("/", routes![index])
-        .mount("/results", routes![results])
-        .mount("/simulate", routes![simulate])
-        .mount("/load", routes![load])
+        .mount("/", routes![results])
+        .mount("/", routes![simulate])
+        .mount("/", routes![load])
         // everything else
         .mount("/static", FileServer::from(relative!("src/static")))
         .attach(Template::fairing())

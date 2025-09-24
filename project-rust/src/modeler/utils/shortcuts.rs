@@ -2,7 +2,7 @@ use crate::modeler::components::element::Element;
 use crate::modeler::utils::consts::NextElementType;
 
 pub fn out_act(e: &mut Element) {
-    match e.next_element_type {
+    match e.next_element_type.as_ref().unwrap() {
         NextElementType::Random => {
             if !e.next_elements.is_empty() {
                 let rand_index = rand::random::<u32>() % e.next_elements.len() as u32;

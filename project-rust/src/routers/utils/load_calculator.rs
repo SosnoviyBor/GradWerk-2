@@ -18,7 +18,7 @@ pub fn calculate_load(deviation: f64, dist: DistributionType, mean: f64, replica
             ) / replica as f64
         }
         DistributionType::Erlang => {
-            streaming_mean((0..SAMPLE_SIZE).map(|_| random::erlang(mean, deviation as u32)))
+            streaming_mean((0..SAMPLE_SIZE).map(|_| random::erlang(mean, deviation as usize)))
                 / replica as f64
         }
         DistributionType::Constant => return mean,

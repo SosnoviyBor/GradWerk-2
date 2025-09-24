@@ -17,7 +17,10 @@ export function updateNodeLoad(ev) {
     fetch("/load", {
         method: "POST",
         body: JSON.stringify({
-            data: data,
+            deviation: parseFloat(data.deviation),
+            dist: data.dist,
+            mean: parseFloat(data.mean),
+            replica: parseInt(data.replica),
         }),
         headers: { "Content-type": "application/json; charset=UTF-8" }
     })
@@ -52,12 +55,14 @@ function isConnectedToCreate(model, nodeId, createNodeIds, visited = new Set()) 
 export function calculateLoadDifference() {
     const model = editor.export()["drawflow"]["Home"]["data"];
 
-    // Find all Create nodes (type 'userinput')
+    // Find all Create nodes
     const createNodes = Object.entries(model).filter(
-        ([, node]) => node.class === "userinput"
+        ([, node]) => node.class === "create"
     );
     if (createNodes.length === 0) return;
     const createNodeIds = new Set(createNodes.map(([id]) => id));
+
+    // TODO REWRITE THIS PIECE OF SHIT
 
     // For simplicity, use the sum of all Create node loads as the reference load
     let totalCreateLoad = 0;
@@ -73,8 +78,11 @@ export function calculateLoadDifference() {
         const current_node_element = document.getElementById(`node-${current_id}`);
         if (!current_node_element) continue;
         const connected = isConnectedToCreate(model, current_id, createNodeIds);
-        // Also disable outline for Dispose nodes (class 'useroutput')
-        if (!connected || current_node.class === "useroutput") {
+        // Also disable outline for Dispose and Create nodes
+        if (!connected
+            || current_node.class === "dispose"
+            || current_node === "create"
+        ) {
             current_node_element.style.border = "";
             current_node_element.style.boxShadow = "";
             continue;
