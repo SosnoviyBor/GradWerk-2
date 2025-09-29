@@ -1,11 +1,13 @@
-#[derive(Clone)]
+use serde::Serialize;
+
+#[derive(Clone, Serialize)]
 pub enum NextElementType {
     Balanced,
     RoundRobin,
     Random,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Serialize)]
 pub enum DistributionType {
     Exponential,
     Normal,
@@ -14,7 +16,7 @@ pub enum DistributionType {
     Constant,
 }
 
-#[derive(PartialEq, Eq, Clone)]
+#[derive(PartialEq, Eq, Clone, Serialize)]
 pub enum ElementType {
     Create,
     Process,

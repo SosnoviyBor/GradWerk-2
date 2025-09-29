@@ -1,12 +1,11 @@
 use std::collections::HashMap;
 
-use rocket::serde::Deserialize;
 use rocket::serde::json::{Json, from_str};
-use rocket_dyn_templates::{Template, context};
+use rocket::serde::Deserialize;
 
 use super::utils::element_parser::{create_elements, parse_distribution};
 use super::utils::load_calculator::calculate_load;
-use crate::modeler::model::Model;
+use crate::modeler::model::{Model, Results};
 
 #[derive(Deserialize)]
 #[serde(crate = "rocket::serde")]
@@ -53,7 +52,7 @@ pub struct Connection {
 }
 
 #[post("/simulate", format = "application/json", data = "<request>")]
-pub fn simulate(request: Json<SimRequest>) -> Template {
+pub fn simulate(request: Json<SimRequest>) -> Json<Results> {
     let data = request.into_inner();
     assert!(data.simtime > 0.0 && data.log_max_size > 0);
 
@@ -62,16 +61,7 @@ pub fn simulate(request: Json<SimRequest>) -> Template {
     let simdata = Model::new(elements, data.log_max_size as usize).simulate(data.simtime);
     print!("Modeling finished!");
 
-    Template::render(
-        "index",
-        context! {
-            results: simdata.0,
-            log: simdata.1,
-            time: simdata.2,
-            // memory: simdata.3,
-            // iterations: simdata.4,
-        },
-    )
+    Json(simdata)
 }
 
 #[derive(Deserialize)]
@@ -94,5 +84,5 @@ pub fn load(request: String) -> String {
         data.replica,
     );
 
-    format!("{}", load)
+    load.to_string()
 }

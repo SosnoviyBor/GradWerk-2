@@ -16,7 +16,6 @@ mod routers {
     pub mod utils {
         pub mod element_parser;
         pub mod load_calculator;
-        pub mod result_decoder;
     }
     pub mod pages;
     pub mod simulator;

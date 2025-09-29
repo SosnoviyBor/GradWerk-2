@@ -2,6 +2,7 @@ use ordered_float::OrderedFloat;
 use std::cmp::Reverse;
 use std::collections::BinaryHeap;
 use std::sync::atomic::{AtomicUsize, Ordering};
+use serde::Serialize;
 
 use crate::modeler::components::create;
 use crate::modeler::components::dispose;
@@ -15,7 +16,7 @@ fn get_next_id() -> usize {
     NEXT_ID.fetch_add(1, Ordering::SeqCst)
 }
 
-#[derive(Clone)]
+#[derive(Clone, Serialize)]
 pub struct Element {
     pub id: usize,
     pub name: String,

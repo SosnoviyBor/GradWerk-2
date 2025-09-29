@@ -25,7 +25,6 @@ class Model:
             log: [str],
             time: float,
             memory: float,
-            cpu: float,
             iterations: int,
         }
         """

@@ -1,15 +1,40 @@
-use std::collections::HashMap;
+use peak_alloc::PeakAlloc;
+use rocket::serde::Serialize;
+use std::time::Instant;
 
 use crate::modeler::components::element::Element;
 use crate::modeler::utils::consts::ElementType;
+
+static PEAK_ALLOC: PeakAlloc = PeakAlloc;
 
 pub struct Model {
     pub elements: Vec<Element>,
     pub iteration: i32,
     pub tnext: f64,
     pub tcurr: f64,
-    pub log: HashMap<String, Vec<String>>,
+    pub log_first: Vec<String>,
+    pub log_last: Vec<String>,
     pub log_max_size: usize,
+}
+
+#[derive(Serialize)]
+#[serde(crate = "rocket::serde")]
+pub struct Results {
+    results: Vec<SimSummary>,
+    log_first: Vec<String>,
+    log_last: Vec<String>,
+    time: u64,
+    peak_mem: f32,
+    interations: i32,
+}
+
+#[derive(Serialize)]
+pub struct SimSummary {
+    element: Element,
+    quantity: u32,
+    failures: i32,
+    mean_queue_len: f64,
+    fail_prob: f64,
 }
 
 impl Model {
@@ -19,43 +44,42 @@ impl Model {
             iteration: -1,
             tnext: 0.0,
             tcurr: 0.0,
-            log: HashMap::new(),
+            log_first: vec![],
+            log_last: vec![],
             log_max_size,
         }
     }
 
-    pub fn simulate(&mut self, time: f64) -> ((), HashMap<String, Vec<String>>, i32) {
+    pub fn simulate(&mut self, time: f64) -> Results {
         self.iteration = 0;
-        self.log.insert(
-            String::from("first"),
-            vec![format!(
-                "There are {} elements in the simulation",
-                self.elements.len()
-            )],
-        );
-        self.log.insert(String::from("last"), vec![]);
+        self.log_first.push(format!(
+            "There are {} elements in the simulation",
+            self.elements.len()
+        ));
 
         // init measurements
-        // ram
-        // time
+        let time_start = Instant::now();
 
         self.mainloop(time);
 
         // finalize measurments
+        let time_elapsed = time_start.elapsed().as_secs();
+        let peak_mem = PEAK_ALLOC.peak_usage_as_mb();
 
         self.log_sim_results();
         // trim trailing newline
         // TODO might be broken?
-        if let Some(first) = self.log.get_mut("last").and_then(|v| v.get_mut(0)) {
-            first.pop();
-        }
-        return (
-            self.collect_sim_summary(),
-            self.log.clone(),
-            // time
-            // ram
-            self.iteration,
-        );
+        // if let Some(first) = self.log.get_mut("last").and_then(|v| v.get_mut(0)) {
+        //     first.pop();
+        // }
+        return Results {
+            results: self.collect_sim_summary(),
+            log_first: self.log_first.clone(),
+            log_last: self.log_last.clone(),
+            time: time_elapsed,
+            peak_mem,
+            interations: self.iteration,
+        };
     }
 
     fn mainloop(&mut self, time: f64) {
@@ -103,12 +127,12 @@ impl Model {
             msg.push_str(&element.get_summary());
         }
         // update log
-        if self.log["first"].len() <= self.log_max_size {
-            self.log.get_mut("first").unwrap().push(msg);
+        if self.log_first.len() <= self.log_max_size {
+            self.log_first.push(msg);
         } else {
-            self.log.get_mut("last").unwrap().push(msg);
-            if self.log["last"].len() > self.log_max_size {
-                self.log.get_mut("last").unwrap().remove(0);
+            self.log_last.push(msg);
+            if self.log_last.len() > self.log_max_size {
+                self.log_last.remove(0);
             }
         }
     }
@@ -144,9 +168,33 @@ impl Model {
             "---------------------------------\n
             Simulation is done successfully!",
         );
-        self.log.get_mut("last").unwrap().push(msg);
+        self.log_last.push(msg);
     }
 
-    // TODO when i figure out the return format
-    fn collect_sim_summary(&self) {}
+    fn collect_sim_summary(&self) -> Vec<SimSummary> {
+        let mut summary: Vec<SimSummary> = vec![];
+        for e in &self.elements {
+            summary.push(match e.elem_type {
+                ElementType::Create | ElementType::Dispose => SimSummary {
+                    element: e.clone(),
+                    quantity: e.quantity,
+                    failures: -1,
+                    mean_queue_len: -1.0,
+                    fail_prob: -1.0,
+                },
+                ElementType::Process => SimSummary {
+                    element: e.clone(),
+                    quantity: e.quantity,
+                    failures: e.failure as i32,
+                    mean_queue_len: e.mean_queue / self.tcurr,
+                    fail_prob: if e.failure + e.quantity != 0 {
+                        (e.failure / (e.failure + e.quantity)) as f64
+                    } else {
+                        0.0
+                    },
+                },
+            });
+        }
+        summary
+    }
 }
