@@ -1,13 +1,13 @@
-use serde::Serialize;
+use rocket::serde::{Deserialize, Serialize};
 
-#[derive(Clone, Serialize)]
+#[derive(Clone, Serialize, Deserialize)]
 pub enum NextElementType {
     Balanced,
     RoundRobin,
     Random,
 }
 
-#[derive(Clone, Serialize)]
+#[derive(Clone, Serialize, Deserialize, Debug)]
 pub enum DistributionType {
     Exponential,
     Normal,
@@ -16,7 +16,7 @@ pub enum DistributionType {
     Constant,
 }
 
-#[derive(PartialEq, Eq, Clone, Serialize)]
+#[derive(PartialEq, Eq, Clone, Serialize, Deserialize)]
 pub enum ElementType {
     Create,
     Process,

@@ -1,17 +1,20 @@
-use rocket::serde::json::{Json, Value};
-use rocket_dyn_templates::{context, Template};
+use rocket::form::Form;
+use rocket_dyn_templates::{Template, context};
 
-// use super::utils::result_decoder::decode;
+use crate::modeler::model::Results;
 
 #[get("/")]
 pub fn index() -> Template {
     Template::render("index", context! {})
 }
 
-#[post("/results", data = "<body>")]
-pub fn results(body: Json<Value>) -> Template {
-    // let data = decode(body);
-    print!("Received body: {:?}", body);
+#[derive(FromForm)]
+pub struct InputData {
+    result: String,
+}
 
-    Template::render("results", &*body)
+#[post("/results", data = "<form_data>")]
+pub fn results(form_data: Form<InputData>) -> Template {
+    let data: Results = serde_json::from_str(&form_data.result).unwrap();
+    Template::render("results", data)
 }

@@ -55,11 +55,11 @@ export function requestSimulation() {
 
     // check params
     if (!(
-            Number.isInteger(simtime) &&
-            simtime > 0 &&
-            Number.isInteger(log_max_size) &&
-            log_max_size > 0
-        )) {
+        Number.isInteger(simtime) &&
+        simtime > 0 &&
+        Number.isInteger(log_max_size) &&
+        log_max_size > 0
+    )) {
         console.log(`
             Wrong input!
             simtime = ${simtime}
@@ -73,9 +73,8 @@ export function requestSimulation() {
     node_simstarted.showOverlay()
 
     // start simulation
-    const model = editor.export()["drawflow"]["Home"]["data"]
     const body = {
-        model: model,
+        model: prepareModel(),
         simtime: simtime,
         log_max_size: log_max_size
     }
@@ -91,4 +90,49 @@ export function requestSimulation() {
             utils.postToNewTab(json, "/results")
             node_simstarted.hideOverlay()
         })
+}
+
+function prepareModel() {
+    const model = editor.export()["drawflow"]["Home"]["data"]
+    for (const [id, e] of Object.entries(model)) {
+        // clear redundant fields
+        delete e.html
+        delete e.id
+        delete e.name
+        delete e.pos_x
+        delete e.pos_y
+        delete e.typenode
+
+        // edit element data
+        switch (e.class) {
+            case "create":
+            case "process":
+                // cast values into the correct types
+                e.data.deviation = Number(e.data.deviation)
+                e.data.mean = Number(e.data.mean)
+                e.data.queuesize = Number(e.data.queuesize)
+                e.data.replica = Number(e.data.replica)
+                break
+            case "dispose":
+                // populate with dummy values
+                e.data.deviation = 0
+                e.data.dist = "exponential"
+                e.data.mean = 0
+                e.data.order = "balanced"
+                e.data.queuesize = 0
+                e.data.replica = 0
+                break
+            default:
+                // delete everything else
+                delete model[id]
+                break
+        }
+        // resturcture IO
+        e.inputs = Object.values(e.inputs)
+            .flatMap(input => input.connections.map(c => Number(c.node)));
+        e.outputs = Object.values(e.outputs)
+            .flatMap(output => output.connections.map(c => Number(c.node)));
+    }
+
+    return model
 }

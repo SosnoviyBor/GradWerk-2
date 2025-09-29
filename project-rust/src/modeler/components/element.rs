@@ -1,8 +1,8 @@
 use ordered_float::OrderedFloat;
+use rocket::serde::{Deserialize, Serialize};
 use std::cmp::Reverse;
 use std::collections::BinaryHeap;
 use std::sync::atomic::{AtomicUsize, Ordering};
-use serde::Serialize;
 
 use crate::modeler::components::create;
 use crate::modeler::components::dispose;
@@ -16,13 +16,18 @@ fn get_next_id() -> usize {
     NEXT_ID.fetch_add(1, Ordering::SeqCst)
 }
 
-#[derive(Clone, Serialize)]
+pub fn reset_next_id() {
+    NEXT_ID.store(0, Ordering::SeqCst);
+}
+
+#[derive(Clone, Serialize, Deserialize)]
 pub struct Element {
     pub id: usize,
     pub name: String,
     pub worker_count: u32,
     pub elem_type: ElementType,
 
+    #[serde(deserialize_with = "deserialize_tnext")]
     pub tnext: BinaryHeap<Reverse<OrderedFloat<f64>>>,
     pub tcurr: f64,
 
@@ -112,13 +117,17 @@ impl Element {
                 self.delay_mean as f64 - self.delay_dev as f64,
                 self.delay_mean as f64 + self.delay_dev as f64,
             ),
-            DistributionType::Erlang => random::erlang(self.delay_mean as f64, self.delay_dev as usize),
+            DistributionType::Erlang => {
+                random::erlang(self.delay_mean as f64, self.delay_dev as usize)
+            }
             DistributionType::Constant => self.delay_mean,
         }
     }
 
     pub fn get_tnext(&mut self) -> f64 {
-        self.tnext.peek().map_or(f64::INFINITY, |x| x.0.into_inner())
+        self.tnext
+            .peek()
+            .map_or(f64::INFINITY, |x| x.0.into_inner())
     }
 
     pub fn put_tnext(&mut self, t: f64) {
@@ -171,4 +180,18 @@ impl Element {
             ElementType::Dispose => {}
         }
     }
+}
+
+fn deserialize_tnext<'de, D>(
+    deserializer: D,
+) -> Result<BinaryHeap<Reverse<OrderedFloat<f64>>>, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    let raw: Vec<Option<f64>> = Vec::deserialize(deserializer)?;
+    let heap = raw
+        .into_iter()
+        .filter_map(|opt| opt.map(|v| Reverse(OrderedFloat(v))))
+        .collect();
+    Ok(heap)
 }

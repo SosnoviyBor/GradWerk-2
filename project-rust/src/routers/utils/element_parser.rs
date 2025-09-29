@@ -4,7 +4,7 @@ use crate::modeler::components::element::Element;
 use crate::modeler::utils::consts::DistributionType;
 use crate::modeler::utils::consts::ElementType;
 use crate::modeler::utils::consts::NextElementType;
-use crate::routers::simulator::{ElementInfo, IO};
+use crate::routers::simulator::{ElementInfo};
 
 pub fn create_elements(model: HashMap<String, ElementInfo>) -> Vec<Element> {
     let mut elements_by_id = HashMap::new();
@@ -35,12 +35,8 @@ fn element_is_valid(element: &ElementInfo) -> bool {
     if element.inputs.is_empty() || element.outputs.is_empty() {
         true
     } else {
-        has_connections(&element.inputs) && has_connections(&element.outputs)
+        element.inputs.len() > 0 && element.outputs.len() > 0
     }
-}
-
-fn has_connections(io: &[IO]) -> bool {
-    io.iter().any(|conn| !conn.connections.is_empty())
 }
 
 pub fn parse_distribution(dist_name: &str) -> Option<DistributionType> {
@@ -95,19 +91,28 @@ fn chain_elements(
         }
 
         let mut next_elements: Vec<Element> = vec![];
-        let outputs = &element_info.outputs;
-
-        for out_id in 1..outputs.len() + 1 {
-            if let Some(out) = outputs.get(out_id) {
-                for (_, connection) in &out.connections {
-                    let element_id = format!("output_{}", connection.node);
-
-                    if let Some(next_el) = readonly_elements_by_id.get(&element_id) {
-                        next_elements.push(next_el.clone());
-                    }
-                }
-            }
+        for out_id in &element_info.outputs {
+            next_elements.push(
+                readonly_elements_by_id
+                    .get(&String::from(out_id.to_string()))
+                    .unwrap()
+                    .clone(),
+            );
         }
+
+        // let outputs = &element_info.outputs;
+
+        // for out_id in 1..outputs.len() + 1 {
+        //     if let Some(out) = outputs.get(out_id) {
+        //         for (_, connection) in &out.connections {
+        //             let element_id = format!("output_{}", connection.node);
+
+        //             if let Some(next_el) = readonly_elements_by_id.get(&element_id) {
+        //                 next_elements.push(next_el.clone());
+        //             }
+        //         }
+        //     }
+        // }
         element.next_elements = next_elements;
     }
 }

@@ -16,8 +16,8 @@ Simuation results
 <!-- Google Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
 <!-- Local JS/CSS -->
-<script src="{{ static/results/main.js }}" type="module"></script>
-<link rel="stylesheet" type="text/css" href="{{ static/results/results.css }}" />
+<script src="static/results/main.js" type="module"></script>
+<link rel="stylesheet" type="text/css" href="static/results/results.css" />
 {% endblock %}
 
 {% block header %}
@@ -62,11 +62,11 @@ Simuation results
         <tbody>
           <tr>
             <td class="resource-label"><strong>Memory Usage:</strong></td>
-            <td class="resource-value">{{ memory }} MB</td>
+            <td class="resource-value">{{ peak_mem | round(method="ceil", precision=4) }} MB</td>
           </tr>
           <tr>
             <td class="resource-label"><strong>Computing Time:</strong></td>
-            <td class="resource-value">{{ time }} seconds</td>
+            <td class="resource-value">{{ time | round(method="ceil", precision=4) }} seconds</td>
           </tr>
           <tr>
             <td class="resource-label"><strong>Total events:</strong></td>
@@ -74,7 +74,7 @@ Simuation results
           </tr>
           <tr>
             <td class="resource-label"><strong>Events/second:</strong></td>
-            <td class="resource-value">{{ (iterations / time) }}</td>
+            <td class="resource-value">{{ iterations / time | round(method="ceil", precision=4) }}</td>
           </tr>
         </tbody>
       </table>
@@ -88,8 +88,8 @@ Simuation results
   <div id="logs-first" class="logbox-outer">
     <div class="logbox-heading">- Simulation Start Log -</div>
     <div class="logbox">
-      {% for message in log.first %}
-      {% for line in message %}
+      {% for message in log_first %}
+      {% for line in message | split(pat="\n\n") %}
       {% if line == "" %}
       <br>
       {% else %}
@@ -103,8 +103,8 @@ Simuation results
   <div id="logs-last" class="logbox-outer">
     <div class="logbox-heading">- Simulation End Log -</div>
     <div class="logbox">
-      {% for message in log.last %}
-      {% for line in message %}
+      {% for message in log_last %}
+      {% for line in message | split(pat="\n\n") %}
       {% if line == "" %}
       <br>
       {% else %}
@@ -118,13 +118,13 @@ Simuation results
 
 <!-- Hidden Elements Data Section -->
 <div id="elements" hidden>
-  {% for element in results %}
-  <div class="element" id="{{ 'element-' ~ element.data.id }}" data-name="{{ element.data.name }}"
-    data-mean="{{ element.data.mean }}" data-deviation="{{ element.data.deviation }}"
-    data-worker-count="{{ element.data.worker_count }}" data-distribution="{{ element.data.distribution }}"
-    data-max-queue="{{ element.data.max_queue }}" data-quantity="{{ element.result.quantity }}"
-    data-failures="{{ element.result.failures }}" data-mean-queue-length="{{ element.result.mean_queue_length }}"
-    data-failure-probability="{{ element.result.failure_probability }}">
+  {% for sim_summary in results %}
+  <div class="element" id="{{ 'element-' ~ sim_summary.element.id }}" data-name="{{ sim_summary.element.name }}"
+    data-mean="{{ sim_summary.element.delay_mean }}" data-deviation="{{ sim_summary.element.delay_dev }}"
+    data-worker-count="{{ sim_summary.element.worker_count }}"
+    data-distribution="{{ sim_summary.element.distribution }}" data-max-queue="{{ sim_summary.element.max_queue }}"
+    data-quantity="{{ sim_summary.quantity }}" data-failures="{{ sim_summary.failures }}"
+    data-mean-queue-length="{{ sim_summary.mean_queue_len }}" data-failure-probability="{{ sim_summary.fail_prob }}">
   </div>
   {% endfor %}
 </div>

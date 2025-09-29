@@ -1,10 +1,11 @@
 use peak_alloc::PeakAlloc;
-use rocket::serde::Serialize;
+use rocket::serde::{Serialize, Deserialize};
 use std::time::Instant;
 
-use crate::modeler::components::element::Element;
+use crate::modeler::components::element::{reset_next_id, Element};
 use crate::modeler::utils::consts::ElementType;
 
+#[global_allocator]
 static PEAK_ALLOC: PeakAlloc = PeakAlloc;
 
 pub struct Model {
@@ -17,24 +18,24 @@ pub struct Model {
     pub log_max_size: usize,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Deserialize)]
 #[serde(crate = "rocket::serde")]
 pub struct Results {
-    results: Vec<SimSummary>,
-    log_first: Vec<String>,
-    log_last: Vec<String>,
-    time: u64,
-    peak_mem: f32,
-    interations: i32,
+    pub results: Vec<SimSummary>,
+    pub log_first: Vec<String>,
+    pub log_last: Vec<String>,
+    pub time: f64,
+    pub peak_mem: f64,
+    pub iterations: i32,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Deserialize)]
 pub struct SimSummary {
-    element: Element,
-    quantity: u32,
-    failures: i32,
-    mean_queue_len: f64,
-    fail_prob: f64,
+    pub element: Element,
+    pub quantity: u32,
+    pub failures: i32,
+    pub mean_queue_len: f64,
+    pub fail_prob: f64,
 }
 
 impl Model {
@@ -51,6 +52,8 @@ impl Model {
     }
 
     pub fn simulate(&mut self, time: f64) -> Results {
+        reset_next_id();
+
         self.iteration = 0;
         self.log_first.push(format!(
             "There are {} elements in the simulation",
@@ -58,28 +61,27 @@ impl Model {
         ));
 
         // init measurements
+        PEAK_ALLOC.reset_peak_usage();
         let time_start = Instant::now();
 
         self.mainloop(time);
 
         // finalize measurments
-        let time_elapsed = time_start.elapsed().as_secs();
-        let peak_mem = PEAK_ALLOC.peak_usage_as_mb();
+        let time_elapsed = time_start.elapsed().as_secs_f64();
+        let peak_mem = PEAK_ALLOC.peak_usage_as_mb() as f64;
 
         self.log_sim_results();
-        // trim trailing newline
-        // TODO might be broken?
-        // if let Some(first) = self.log.get_mut("last").and_then(|v| v.get_mut(0)) {
-        //     first.pop();
-        // }
-        return Results {
+        // trim extra newline
+        self.log_last.get_mut(0).unwrap().remove(0);
+
+        Results {
             results: self.collect_sim_summary(),
             log_first: self.log_first.clone(),
             log_last: self.log_last.clone(),
             time: time_elapsed,
             peak_mem,
-            interations: self.iteration,
-        };
+            iterations: self.iteration,
+        }
     }
 
     fn mainloop(&mut self, time: f64) {
@@ -120,7 +122,7 @@ impl Model {
         let mut msg = format!(
             "\n
             >>>     Event #{} in {}     <<<\n
-            >>>     time: {:.4}     <<<",
+            >>>     time: {:.4}     <<<\n\n",
             self.iteration, self.elements[event_id].name, self.tnext
         );
         for element in &mut self.elements {
@@ -138,7 +140,7 @@ impl Model {
     }
 
     fn log_sim_results(&mut self) {
-        let mut msg = String::from("\n-------------RESULTS-------------\n");
+        let mut msg = String::from("\n\n-------------RESULTS-------------\n\n");
 
         for element in &mut self.elements {
             msg.push_str(&format!(
@@ -154,7 +156,8 @@ impl Model {
                     0.0
                 };
                 msg.push_str(&format!(
-                    "Mean length of queue = {:.4}\n
+                    "\n
+                    Mean length of queue = {:.4}\n
                     Failure probability = {:.4}\n",
                     element.mean_queue / self.tcurr,
                     failure_prob
@@ -165,7 +168,7 @@ impl Model {
 
         msg.pop();
         msg.push_str(
-            "---------------------------------\n
+            "\n---------------------------------\n
             Simulation is done successfully!",
         );
         self.log_last.push(msg);
