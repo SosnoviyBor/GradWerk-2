@@ -8,7 +8,6 @@ mod modeler {
     pub mod utils {
         pub mod consts;
         pub mod random;
-        pub mod shortcuts;
     }
     pub mod model;
 }

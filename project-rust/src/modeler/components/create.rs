@@ -1,14 +1,12 @@
 use crate::modeler::components::element::Element;
-use crate::modeler::utils::shortcuts;
 
 pub fn in_act() {
     // nothing
 }
 
 pub fn out_act(e: &mut Element) {
-    e.quantity += 1; // super().out_act() equivalent
+    e.quantity += 1;
     e.put_tnext(e.tcurr + e.get_delay());
-    shortcuts::out_act(e);
     e.pop_tnext();
 }
 

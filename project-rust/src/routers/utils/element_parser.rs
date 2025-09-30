@@ -4,7 +4,7 @@ use crate::modeler::components::element::Element;
 use crate::modeler::utils::consts::DistributionType;
 use crate::modeler::utils::consts::ElementType;
 use crate::modeler::utils::consts::NextElementType;
-use crate::routers::simulator::{ElementInfo};
+use crate::routers::simulator::ElementInfo;
 
 pub fn create_elements(model: HashMap<String, ElementInfo>) -> Vec<Element> {
     let mut elements_by_id = HashMap::new();
@@ -20,7 +20,7 @@ pub fn create_elements(model: HashMap<String, ElementInfo>) -> Vec<Element> {
             data.deviation,
             parse_element_type(&element_info.class).unwrap(),
             parse_distribution(&data.dist).unwrap(),
-            parse_next_element_type(&data.order),
+            parse_next_element_type(&data.order).unwrap(),
             data.queuesize,
         );
         element.name = data.name.clone();
@@ -28,7 +28,10 @@ pub fn create_elements(model: HashMap<String, ElementInfo>) -> Vec<Element> {
     }
     // chain elements together
     chain_elements(&model, &mut elements_by_id);
-    elements_by_id.values().cloned().collect()
+    let mut elements: Vec<Element> = elements_by_id.values().cloned().collect();
+    // they need to be in order (ascending)
+    elements.sort_by(|a, b| a.id.cmp(&b.id));
+    elements
 }
 
 fn element_is_valid(element: &ElementInfo) -> bool {
@@ -90,29 +93,10 @@ fn chain_elements(
             continue;
         }
 
-        let mut next_elements: Vec<Element> = vec![];
-        for out_id in &element_info.outputs {
-            next_elements.push(
-                readonly_elements_by_id
-                    .get(&String::from(out_id.to_string()))
-                    .unwrap()
-                    .clone(),
-            );
-        }
-
-        // let outputs = &element_info.outputs;
-
-        // for out_id in 1..outputs.len() + 1 {
-        //     if let Some(out) = outputs.get(out_id) {
-        //         for (_, connection) in &out.connections {
-        //             let element_id = format!("output_{}", connection.node);
-
-        //             if let Some(next_el) = readonly_elements_by_id.get(&element_id) {
-        //                 next_elements.push(next_el.clone());
-        //             }
-        //         }
-        //     }
-        // }
-        element.next_elements = next_elements;
+        element.next_elements = element_info
+            .outputs
+            .iter()
+            .map(|out_id| readonly_elements_by_id.get(&out_id.to_string()).unwrap().id)
+            .collect();
     }
 }

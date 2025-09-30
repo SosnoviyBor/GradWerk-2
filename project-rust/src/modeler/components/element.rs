@@ -20,7 +20,7 @@ pub fn reset_next_id() {
     NEXT_ID.store(0, Ordering::SeqCst);
 }
 
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize, Debug)]
 pub struct Element {
     pub id: usize,
     pub name: String,
@@ -35,8 +35,8 @@ pub struct Element {
     pub delay_mean: f64,
     pub delay_dev: f64,
 
-    pub next_element_type: Option<NextElementType>,
-    pub next_elements: Vec<Element>,
+    pub next_element_type: NextElementType,
+    pub next_elements: Vec<usize>,
     pub round_robin_idx: usize,
 
     pub state: u32,
@@ -60,8 +60,8 @@ impl Element {
         delay_dev: f64,
         elem_type: ElementType,
         distribution: DistributionType,
-        next_element_type: Option<NextElementType>,
-        queue: u32,
+        next_element_type: NextElementType,
+        max_queue: u32,
     ) -> Self {
         // prepare element data
         let id = get_next_id();
@@ -85,11 +85,11 @@ impl Element {
             next_element_type,
             next_elements: Vec::new(),
             round_robin_idx: 0,
-            queue,
+            queue: 0,
             quantity: 0,
             average_load: 0.0,
             state: 0,
-            max_queue: 0,
+            max_queue,
             mean_queue: 0.0,
             wait_start: 0.0,
             wait_time: 0.0,
@@ -124,7 +124,7 @@ impl Element {
         }
     }
 
-    pub fn get_tnext(&mut self) -> f64 {
+    pub fn get_tnext(&self) -> f64 {
         self.tnext
             .peek()
             .map_or(f64::INFINITY, |x| x.0.into_inner())

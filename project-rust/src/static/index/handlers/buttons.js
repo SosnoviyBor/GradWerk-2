@@ -93,7 +93,7 @@ export function requestSimulation() {
 }
 
 function prepareModel() {
-    const model = editor.export()["drawflow"]["Home"]["data"]
+    let model = editor.export()["drawflow"]["Home"]["data"]
     for (const [id, e] of Object.entries(model)) {
         // clear redundant fields
         delete e.html

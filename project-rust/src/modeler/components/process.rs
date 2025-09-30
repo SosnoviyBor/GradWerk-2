@@ -1,11 +1,13 @@
 use crate::modeler::components::element::Element;
-use crate::modeler::utils::shortcuts;
 
 pub fn in_act(e: &mut Element) {
     if e.state < e.worker_count {
+        if e.state == 0 {
+            e.wait_time += e.tcurr - e.wait_start;
+        }
         e.state += 1;
         e.put_tnext(e.tcurr + e.get_delay());
-    } else if e.queue > 0 {
+    } else if e.queue < e.max_queue {
         e.queue += 1;
     } else {
         e.failure += 1;
@@ -22,7 +24,6 @@ pub fn out_act(e: &mut Element) {
     } else {
         e.wait_start = e.tcurr;
     }
-    shortcuts::out_act(e);
     e.pop_tnext();
 }
 

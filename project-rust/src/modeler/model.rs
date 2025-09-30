@@ -1,41 +1,45 @@
 use peak_alloc::PeakAlloc;
-use rocket::serde::{Serialize, Deserialize};
+use rocket::serde::{Deserialize, Serialize};
+use std::collections::VecDeque;
+use std::fmt::Write;
 use std::time::Instant;
 
-use crate::modeler::components::element::{reset_next_id, Element};
-use crate::modeler::utils::consts::ElementType;
+use crate::modeler::components::element::{Element, reset_next_id};
+use crate::modeler::utils::consts::{ElementType, NextElementType};
 
 #[global_allocator]
 static PEAK_ALLOC: PeakAlloc = PeakAlloc;
 
+#[derive(Debug)]
 pub struct Model {
     pub elements: Vec<Element>,
     pub iteration: i32,
     pub tnext: f64,
     pub tcurr: f64,
     pub log_first: Vec<String>,
-    pub log_last: Vec<String>,
+    pub log_last: VecDeque<String>,
     pub log_max_size: usize,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(crate = "rocket::serde")]
 pub struct Results {
     pub results: Vec<SimSummary>,
     pub log_first: Vec<String>,
-    pub log_last: Vec<String>,
+    pub log_last: VecDeque<String>,
     pub time: f64,
     pub peak_mem: f64,
     pub iterations: i32,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct SimSummary {
     pub element: Element,
     pub quantity: u32,
-    pub failures: i32,
+    pub failures: u32,
     pub mean_queue_len: f64,
     pub fail_prob: f64,
+    pub wait_time: f64,
 }
 
 impl Model {
@@ -45,8 +49,8 @@ impl Model {
             iteration: -1,
             tnext: 0.0,
             tcurr: 0.0,
-            log_first: vec![],
-            log_last: vec![],
+            log_first: Vec::with_capacity(log_max_size),
+            log_last: VecDeque::with_capacity(log_max_size + 1), // +1 to account for total sim results
             log_max_size,
         }
     }
@@ -73,7 +77,8 @@ impl Model {
         self.log_sim_results();
         // trim extra newline
         self.log_last.get_mut(0).unwrap().remove(0);
-
+        
+        // print!("{:#?}", self.collect_sim_summary());
         Results {
             results: self.collect_sim_summary(),
             log_first: self.log_first.clone(),
@@ -85,119 +90,209 @@ impl Model {
     }
 
     fn mainloop(&mut self, time: f64) {
+        // print!("{:#?}", self.elements);
+        // preallocate memory for the vectors
+        let mut to_out_act = Vec::with_capacity(self.elements.len());
+        let mut to_in_act = Vec::with_capacity(self.elements.len());
         // thats it
         // thats the whole algorithm for ya
         while self.tcurr < time {
-            // searching for the nearest event
+            // find next event
             self.tnext = f64::INFINITY;
             let mut event_id = 0;
-            for element in &mut self.elements {
-                if element.get_tnext() < self.tnext as f64 {
-                    self.tnext = element.get_tnext() as f64;
-                    event_id = element.id;
+            for e in &self.elements {
+                let tnext_elem = e.get_tnext();
+                if tnext_elem < self.tnext {
+                    self.tnext = tnext_elem;
+                    event_id = e.id;
                 }
             }
-            // update current time of each element + calculate some stats
+
             let tcurr_old = self.tcurr;
             self.tcurr = self.tnext;
-            for element in &mut self.elements {
-                element.do_statistics((self.tcurr - tcurr_old) as f64);
-                element.tcurr = self.tcurr;
+
+            // update statistics
+            for e in &mut self.elements {
+                e.do_statistics(self.tcurr - tcurr_old);
+                e.tcurr = self.tcurr;
             }
+
             // move things between relevant elements queues
-            self.elements[event_id].out_act();
-            for element in &mut self.elements {
-                if element.get_tnext() == self.tcurr as f64 {
-                    element.out_act();
+            // collect out_act elements
+            to_out_act.clear();
+            for (i, e) in self.elements.iter_mut().enumerate() {
+                if e.get_tnext() == self.tcurr {
+                    to_out_act.push(i);
                 }
             }
+            // collect in_act elements
+            to_in_act.clear();
+            for &id in &to_out_act {
+                if let Some(in_id) = self.pick_in_act_element(&id) {
+                    to_in_act.push(in_id);
+                }
+            }
+            // run actions
+            for &i in &to_out_act {
+                self.elements[i].out_act();
+            }
+            for &i in &to_in_act {
+                self.elements[i].in_act();
+            }
+
             // logging
             self.iteration += 1;
             self.log_event(event_id);
         }
     }
 
+    fn pick_in_act_element(&mut self, out_e_id: &usize) -> Option<usize> {
+        let e = &mut self.elements[*out_e_id];
+
+        if e.next_elements.len() == 1 {
+            return Some(e.next_elements[0])
+        }
+
+        match e.next_element_type {
+            NextElementType::Random => {
+                if !e.next_elements.is_empty() {
+                    let rand_index = rand::random::<u32>() % e.next_elements.len() as u32;
+                    Some(rand_index as usize)
+                } else {
+                    None
+                }
+            }
+            NextElementType::RoundRobin => {
+                if !e.next_elements.is_empty() {
+                    if e.round_robin_idx == e.next_elements.len() {
+                        e.round_robin_idx = 0;
+                    }
+                    e.round_robin_idx += 1;
+                    Some(e.round_robin_idx)
+                } else {
+                    None
+                }
+            }
+            NextElementType::Balanced => {
+                if !e.next_elements.is_empty() {
+                    let next_elements_copy = e.next_elements.clone();
+                    let mut min_queue_idx = 0;
+                    let mut min_queue = u32::MAX;
+                    for i in next_elements_copy.iter() {
+                        let next_elem = self.elements.iter().find(|e| e.id == *i).unwrap();
+                        let free_queue = next_elem.queue - next_elem.state;
+                        if free_queue < min_queue {
+                            min_queue = free_queue;
+                            min_queue_idx = *i;
+                        }
+                    }
+                    Some(min_queue_idx)
+                } else {
+                    None
+                }
+            }
+        }
+    }
+
     fn log_event(&mut self, event_id: usize) {
-        // generate message
-        let mut msg = format!(
+        let e = &self.elements[event_id];
+        let mut msg = String::with_capacity(512 + self.elements.len() * 128);
+
+        // header
+        write!(
+            &mut msg,
             "\n
             >>>     Event #{} in {}     <<<\n
             >>>     time: {:.4}     <<<\n\n",
-            self.iteration, self.elements[event_id].name, self.tnext
-        );
-        for element in &mut self.elements {
-            msg.push_str(&element.get_summary());
+            self.iteration, e.name, self.tnext
+        )
+        .unwrap();
+
+        // element summaries
+        for e in &mut self.elements {
+            msg.push_str(&e.get_summary());
         }
-        // update log
+
         if self.log_first.len() <= self.log_max_size {
             self.log_first.push(msg);
         } else {
-            self.log_last.push(msg);
-            if self.log_last.len() > self.log_max_size {
-                self.log_last.remove(0);
+            if self.log_last.len() == self.log_max_size {
+                self.log_last.pop_front();
             }
+            self.log_last.push_back(msg);
         }
     }
 
     fn log_sim_results(&mut self) {
-        let mut msg = String::from("\n\n-------------RESULTS-------------\n\n");
+        // estimate capacity: small over-allocation to avoid reallocations
+        let mut msg = String::with_capacity(1024 + self.elements.len() * 128);
 
-        for element in &mut self.elements {
-            msg.push_str(&format!(
-                "##### {} #####\n
-                quantity = {}\n",
-                element.name, element.quantity
-            ));
+        msg.push_str("\n\n-------------RESULTS-------------\n\n");
 
-            if element.elem_type == ElementType::Process {
-                let failure_prob = if element.quantity + element.failure != 0 {
-                    element.failure as f64 / (element.failure + element.quantity) as f64
+        for e in &self.elements {
+            msg.push_str("##### ");
+            msg.push_str(&e.name);
+            msg.push_str(
+                " #####\n
+                quantity = ",
+            );
+            msg.push_str(&e.quantity.to_string());
+            msg.push('\n');
+
+            if e.elem_type == ElementType::Process {
+                let failure_prob = if e.quantity + e.failure != 0 {
+                    e.failure as f64 / (e.failure + e.quantity) as f64
                 } else {
                     0.0
                 };
+
                 msg.push_str(&format!(
                     "\n
                     Mean length of queue = {:.4}\n
-                    Failure probability = {:.4}\n",
-                    element.mean_queue / self.tcurr,
-                    failure_prob
+                    Failure probability = {:.4}\n
+                    Total time stalling = {:.4}\n",
+                    e.mean_queue / self.tcurr,
+                    failure_prob,
+                    e.wait_time
                 ));
             }
-            msg.push_str("\n");
+
+            msg.push('\n'); // separate elements
         }
 
-        msg.pop();
         msg.push_str(
-            "\n---------------------------------\n
+            "---------------------------------\n
             Simulation is done successfully!",
         );
-        self.log_last.push(msg);
+
+        self.log_last.push_back(msg);
     }
 
     fn collect_sim_summary(&self) -> Vec<SimSummary> {
-        let mut summary: Vec<SimSummary> = vec![];
-        for e in &self.elements {
-            summary.push(match e.elem_type {
+        self.elements
+            .iter()
+            .map(|e| match e.elem_type {
                 ElementType::Create | ElementType::Dispose => SimSummary {
                     element: e.clone(),
                     quantity: e.quantity,
-                    failures: -1,
-                    mean_queue_len: -1.0,
-                    fail_prob: -1.0,
+                    failures: 0,
+                    mean_queue_len: 0.0,
+                    fail_prob: 0.0,
+                    wait_time: 0.0,
                 },
                 ElementType::Process => SimSummary {
                     element: e.clone(),
                     quantity: e.quantity,
-                    failures: e.failure as i32,
+                    failures: e.failure,
                     mean_queue_len: e.mean_queue / self.tcurr,
                     fail_prob: if e.failure + e.quantity != 0 {
-                        (e.failure / (e.failure + e.quantity)) as f64
+                        (e.failure as f64) / ((e.failure + e.quantity) as f64)
                     } else {
                         0.0
                     },
+                    wait_time: e.wait_time,
                 },
-            });
-        }
-        summary
+            })
+            .collect()
     }
 }

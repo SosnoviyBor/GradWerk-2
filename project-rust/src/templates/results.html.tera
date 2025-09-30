@@ -45,10 +45,16 @@ Simuation results
       <canvas class="chart" id="chart-meanqueue"></canvas>
     </div>
   </div>
-  <!-- Quantity Chart -->
+  <!-- Wait time Chart -->
   <div class="chart-card">
     <div class="chart-div">
-      <canvas class="chart" id="chart-quantity"></canvas>
+      <canvas class="chart" id="chart-waittime"></canvas>
+    </div>
+  </div>
+  <!-- Quantity Chart -->
+  <div class="chart-card" id="chart-card-wide">
+    <div class="chart-div" id="chart-div-wide">
+      <canvas class="chart-wide" id="chart-quantity"></canvas>
     </div>
   </div>
 </div>
@@ -119,13 +125,22 @@ Simuation results
 <!-- Hidden Elements Data Section -->
 <div id="elements" hidden>
   {% for sim_summary in results %}
-  <div class="element" id="{{ 'element-' ~ sim_summary.element.id }}" data-name="{{ sim_summary.element.name }}"
-    data-mean="{{ sim_summary.element.delay_mean }}" data-deviation="{{ sim_summary.element.delay_dev }}"
+  <div class="element" id="{{ 'element-' ~ sim_summary.element.id }}"
+    {# sim data #}
+    data-wait-time="{{ sim_summary.wait_time }}"
+    data-quantity="{{ sim_summary.quantity }}"
+    data-failures="{{ sim_summary.failures }}"
+    data-mean-queue-length="{{ sim_summary.mean_queue_len }}"
+    data-failure-probability="{{ sim_summary.fail_prob }}"
+    {# element info #}
+    data-name="{{ sim_summary.element.name }}"
+    data-element-type="{{ sim_summary.element.elem_type }}"
+    data-mean="{{ sim_summary.element.delay_mean }}"
+    data-deviation="{{ sim_summary.element.delay_dev }}"
     data-worker-count="{{ sim_summary.element.worker_count }}"
-    data-distribution="{{ sim_summary.element.distribution }}" data-max-queue="{{ sim_summary.element.max_queue }}"
-    data-quantity="{{ sim_summary.quantity }}" data-failures="{{ sim_summary.failures }}"
-    data-mean-queue-length="{{ sim_summary.mean_queue_len }}" data-failure-probability="{{ sim_summary.fail_prob }}">
-  </div>
+    data-distribution="{{ sim_summary.element.distribution }}"
+    data-max-queue="{{ sim_summary.element.max_queue }}"
+  ></div>
   {% endfor %}
 </div>
 {% endblock %}
