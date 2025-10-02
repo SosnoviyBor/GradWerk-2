@@ -118,17 +118,16 @@ impl Model {
             }
 
             // move things between relevant elements queues
-            // collect out_act elements
             to_out_act.clear();
-            for (i, e) in self.elements.iter_mut().enumerate() {
-                if e.get_tnext() == self.tcurr {
-                    to_out_act.push(i);
-                }
-            }
-            // collect in_act elements
             to_in_act.clear();
-            for &id in &to_out_act {
-                if let Some(in_id) = self.pick_in_act_element(&id) {
+            for (i, e) in self.elements.iter().enumerate() {
+                if e.get_tnext() == self.tcurr {
+                    continue;
+                }
+                // collect out_act elements
+                to_out_act.push(i);
+                // collect in_act elements
+                if let Some(in_id) = self.pick_in_act_element(&i) {
                     to_in_act.push(in_id);
                 }
             }
@@ -146,14 +145,14 @@ impl Model {
         }
     }
 
-    fn pick_in_act_element(&mut self, out_e_id: &usize) -> Option<usize> {
-        let e = &mut self.elements[*out_e_id];
+    fn pick_in_act_element(&self, out_e_id: &usize) -> Option<usize> {
+        let e = &self.elements[*out_e_id];
 
         if e.next_elements.len() == 1 {
             return Some(e.next_elements[0])
         }
 
-        match e.next_element_type {
+        match &e.next_element_type {
             NextElementType::Random => {
                 if !e.next_elements.is_empty() {
                     let rand_index = rand::random::<u32>() % e.next_elements.len() as u32;
@@ -162,13 +161,13 @@ impl Model {
                     None
                 }
             }
-            NextElementType::RoundRobin => {
+            NextElementType::RoundRobin(idx) => {
                 if !e.next_elements.is_empty() {
-                    if e.round_robin_idx == e.next_elements.len() {
-                        e.round_robin_idx = 0;
+                    if idx.get() == e.next_elements.len() {
+                        idx.set(0);
                     }
-                    e.round_robin_idx += 1;
-                    Some(e.round_robin_idx)
+                    idx.set(idx.get() + 1);
+                    Some(idx.get())
                 } else {
                     None
                 }

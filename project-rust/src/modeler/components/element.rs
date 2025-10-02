@@ -37,7 +37,6 @@ pub struct Element {
 
     pub next_element_type: NextElementType,
     pub next_elements: Vec<usize>,
-    pub round_robin_idx: usize,
 
     pub state: u32,
     pub queue: u32,
@@ -84,7 +83,6 @@ impl Element {
             delay_dev,
             next_element_type,
             next_elements: Vec::new(),
-            round_robin_idx: 0,
             queue: 0,
             quantity: 0,
             average_load: 0.0,

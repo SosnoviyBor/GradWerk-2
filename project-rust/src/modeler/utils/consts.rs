@@ -1,9 +1,11 @@
+use std::cell::Cell;
+
 use rocket::serde::{Deserialize, Serialize};
 
 #[derive(Clone, Serialize, Deserialize, Debug)]
 pub enum NextElementType {
     Balanced,
-    RoundRobin,
+    RoundRobin(Cell<usize>),
     Random,
 }
 

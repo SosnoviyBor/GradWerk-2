@@ -1,3 +1,4 @@
+use std::cell::Cell;
 use std::collections::HashMap;
 
 use crate::modeler::components::element::Element;
@@ -65,7 +66,7 @@ pub fn parse_element_type(et_name: &str) -> Option<ElementType> {
 pub fn parse_next_element_type(net_name: &str) -> Option<NextElementType> {
     match net_name.to_lowercase().as_str() {
         "balanced" => Some(NextElementType::Balanced),
-        "round robin" => Some(NextElementType::RoundRobin),
+        "round robin" => Some(NextElementType::RoundRobin(Cell::new(0))),
         "random" => Some(NextElementType::Random),
         _ => None,
     }
