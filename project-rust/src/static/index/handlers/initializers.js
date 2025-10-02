@@ -4,10 +4,11 @@ import * as node_modal from "./nodes/modal.js"
 import * as node_general from "./nodes/general.js"
 
 export function nodeData(id) {
-    if (!document.getElementById(`node-${id}`).querySelector(".dbclickbox")) { return }
+    const node = document.getElementById(`node-${id}`)
+
+    if (!node.querySelector(".dbclickbox")) { return }
 
     const updateable_tags = ["input", "select", "textarea"]
-
     const content = document.getElementById(`node-${id}`).querySelector(".modal-content")
     const event = new Event("input", { bubbles: true })
 
@@ -17,7 +18,8 @@ export function nodeData(id) {
         }
     })
 
-    node_load.updateNodeLoad({ target: content })
+    node.dataset.load = 0
+    node_load.updateNodeCapacity({ target: content })
 }
 
 
@@ -27,9 +29,10 @@ export function dblclickboxListeners(id) {
     if (!box.classList.contains("dbclickbox")) { return }
 
     box.addEventListener("dblclick", ev => node_modal.showModal(ev))
-    box.querySelector(".modal-close").addEventListener("click", ev => {
+    box.querySelector(".modal-close").addEventListener("click", async ev => {
         node_modal.closeModal(ev)
-    node_load.updateNodeLoad(ev)
+        await node_load.updateNodeCapacity(ev)
+        node_load.updateAllLoads()
     })
     box.querySelector(".df-name").addEventListener("change", ev => node_general.updateName(ev))
 }

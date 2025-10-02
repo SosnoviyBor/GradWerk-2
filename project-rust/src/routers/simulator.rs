@@ -4,7 +4,7 @@ use rocket::serde::json::{Json, from_str};
 use rocket::serde::Deserialize;
 
 use super::utils::element_parser::{create_elements, parse_distribution};
-use super::utils::load_calculator::calculate_load;
+use super::utils::capacity_calculator::calculate_capacity;
 use crate::modeler::model::{Model, Results};
 
 #[derive(Deserialize)]
@@ -56,16 +56,16 @@ pub struct LoadRequest {
     replica: u32,
 }
 
-#[post("/load", data = "<request>")]
-pub fn load(request: String) -> String {
+#[post("/capacity", data = "<request>")]
+pub fn capacity(request: String) -> String {
     let data: LoadRequest = from_str(&request).unwrap();
 
-    let load = calculate_load(
+    let capacity = calculate_capacity(
         data.deviation,
         parse_distribution(&data.dist).unwrap(),
         data.mean,
         data.replica,
     );
 
-    load.to_string()
+    capacity.to_string()
 }

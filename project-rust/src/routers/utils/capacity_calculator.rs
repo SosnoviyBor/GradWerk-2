@@ -3,7 +3,7 @@ use crate::modeler::utils::random;
 
 const SAMPLE_SIZE: u32 = 10000;
 
-pub fn calculate_load(deviation: f64, dist: DistributionType, mean: f64, replica: u32) -> f64 {
+pub fn calculate_capacity(deviation: f64, dist: DistributionType, mean: f64, replica: u32) -> f64 {
     match dist {
         DistributionType::Exponential => {
             streaming_mean((0..SAMPLE_SIZE).map(|_| random::exponential(mean))) / replica as f64
