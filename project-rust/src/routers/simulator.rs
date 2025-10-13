@@ -1,11 +1,13 @@
 use std::collections::HashMap;
 
+use cpu_time::ProcessTime;
 use rocket::serde::json::{Json, from_str};
 use rocket::serde::Deserialize;
 
 use super::utils::element_parser::{create_elements, parse_distribution};
 use super::utils::capacity_calculator::calculate_capacity;
 use crate::modeler::model::{Model, Results};
+use crate::modeler::utils::round::round;
 
 #[derive(Deserialize)]
 #[serde(crate = "rocket::serde")]
@@ -36,14 +38,18 @@ pub struct ElementData {
 
 #[post("/simulate", format = "application/json", data = "<request>")]
 pub fn simulate(request: Json<SimRequest>) -> Json<Results> {
+    let time_start = ProcessTime::now();
     let data = request.into_inner();
     assert!(data.simtime > 0.0 && data.log_max_size > 0);
 
     let elements = create_elements(data.model);
     print!("Modeling started!");
-    let simdata = Model::new(elements, data.log_max_size as usize).simulate(data.simtime);
+    let mut simdata = Model::new(elements, data.log_max_size as usize).simulate(data.simtime);
     print!("Modeling finished!");
+    let time_elapsed = round(time_start.elapsed().as_secs_f64(), 4);
 
+    simdata.total_time = time_elapsed;
+    // print!("{:#?}", simdata);
     Json(simdata)
 }
 

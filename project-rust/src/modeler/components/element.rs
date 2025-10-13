@@ -1,4 +1,5 @@
 use ordered_float::OrderedFloat;
+use rand::rngs::SmallRng;
 use rocket::serde::{Deserialize, Serialize};
 use std::cmp::Reverse;
 use std::collections::BinaryHeap;
@@ -105,18 +106,19 @@ impl Element {
         element
     }
 
-    pub fn get_delay(&self) -> f64 {
+    pub fn get_delay(&self, rng: &mut SmallRng) -> f64 {
         match self.distribution {
-            DistributionType::Exponential => random::exponential(self.delay_mean as f64),
+            DistributionType::Exponential => random::exponential(rng, self.delay_mean as f64),
             DistributionType::Normal => {
-                random::normal(self.delay_mean as f64, self.delay_dev as f64)
+                random::normal(rng, self.delay_mean as f64, self.delay_dev as f64)
             }
             DistributionType::Uniform => random::uniform(
+                rng,
                 self.delay_mean as f64 - self.delay_dev as f64,
                 self.delay_mean as f64 + self.delay_dev as f64,
             ),
             DistributionType::Erlang => {
-                random::erlang(self.delay_mean as f64, self.delay_dev as usize)
+                random::erlang(rng, self.delay_mean as f64, self.delay_dev as usize)
             }
             DistributionType::Constant => self.delay_mean,
         }
@@ -136,18 +138,18 @@ impl Element {
         self.tnext.pop();
     }
 
-    pub fn in_act(&mut self) {
+    pub fn in_act(&mut self, rng: &mut SmallRng) {
         match self.elem_type {
             ElementType::Create => create::in_act(),
-            ElementType::Process => process::in_act(self),
-            ElementType::Dispose => dispose::in_act(self),
+            ElementType::Process => process::in_act(self, rng),
+            ElementType::Dispose => dispose::in_act(self, rng),
         }
     }
 
-    pub fn out_act(&mut self) {
+    pub fn out_act(&mut self, rng: &mut SmallRng) {
         match self.elem_type {
-            ElementType::Create => create::out_act(self),
-            ElementType::Process => process::out_act(self),
+            ElementType::Create => create::out_act(self, rng),
+            ElementType::Process => process::out_act(self, rng),
             ElementType::Dispose => dispose::out_act(self),
         }
     }

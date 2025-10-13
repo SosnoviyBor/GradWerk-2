@@ -1,7 +1,7 @@
 from typing import List
 from sys import maxsize
 from time import perf_counter
-import psutil, os
+import psutil
 
 from src.modeler.components.element import Element
 from src.modeler.components.create import Create
@@ -13,10 +13,21 @@ class Model:
     def __init__(self, elements: List[Element]) -> None:
         self.elements = elements
 
-        self.iteration = -1
-        self.tnext = 0.0
+        self.iteration = 0
+        self.tnext = .0
         self.tcurr = self.tnext
-        self.log = {"first": [], "last": []}
+        self.log = {
+            "first": [f"There are {len(self.elements)} elements in the simulation"],
+            "last": [],
+        }
+        
+        self.process = psutil.Process()
+        self.mem_peak = .0
+        self.mem_total = .0
+        self.mem_samples = 0
+        self.start_time = perf_counter()
+        self.last_sample = self.start_time
+        self.sample_interval = .5 # in seconds
 
     def simulate(self, time: float, log_max_size: int) -> dict:
         """
@@ -28,33 +39,24 @@ class Model:
             iterations: int,
         }
         """
-        # reset model state
-        self.iteration = 0
-        self.log["first"] = [
-            f"There are {len(self.elements)} elements in the simulation"
-        ]
-        self.log["last"] = []
-        
-        # init measurements
-        process = psutil.Process(os.getpid())
-        # initialize CPU percent measurement
         timer_start = perf_counter()
-        
         self._mainloop(time, log_max_size)
-        
-        # finalize measurements
-        timer_result = perf_counter() - timer_start
-        memory_usage = process.memory_info().rss / (1024 * 1024) # in MB
-        
+        time_elapsed = perf_counter() - timer_start
+
         self._log_sim_results()
         # trim trailing newline
         self.log["last"][0] = self.log["last"][0][1:]
+
         return {
             "results": self._collect_sim_summary(),
             "log": self.log,
-            "time": timer_result,
-            "memory": memory_usage,
-            "iterations": self.iteration
+            "iterations": self.iteration,
+            "sim_time": round(time_elapsed, 4),
+            "total_time": .0,
+            "iters_per_sec": round(self.iteration / time_elapsed, 4),
+            # in MB
+            "mem_peak": round(self.mem_peak / 1024, 4),
+            "mem_mean": round(self.mem_total / self.mem_samples / 1024, 4),
         }
 
     def _mainloop(self, time: float, log_max_size: int) -> None:
@@ -82,6 +84,7 @@ class Model:
             # logging
             self.iteration += 1
             self._log_event(event_id, log_max_size)
+            self.update_mem_stats()
 
     def _log_event(self, event_id: int, log_max_size: int) -> None:
         # generate message
@@ -184,3 +187,12 @@ class Model:
             model_data.append({"data": element_data, "result": element_result})
 
         return model_data
+
+    def update_mem_stats(self):
+        now = perf_counter()
+        if now - self.last_sample >= self.sample_interval:
+            mem_curr = self.process.memory_info().rss / 1024 # to KB
+            self.mem_peak = max(self.mem_peak, mem_curr)
+            self.mem_total += mem_curr
+            self.mem_samples += 1
+            self.last_sample = now

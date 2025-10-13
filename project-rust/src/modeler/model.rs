@@ -1,91 +1,107 @@
-use peak_alloc::PeakAlloc;
+use cpu_time::ProcessTime;
+use rand::SeedableRng;
+use rand::rngs::SmallRng;
 use rocket::serde::{Deserialize, Serialize};
 use std::collections::VecDeque;
 use std::fmt::Write;
-use std::time::Instant;
+use std::time::{Duration, Instant};
+use sysinfo::{Pid, ProcessesToUpdate, System};
 
-use crate::modeler::components::element::{Element, reset_next_id};
+use crate::modeler::components::element::Element;
 use crate::modeler::utils::consts::{ElementType, NextElementType};
-
-#[global_allocator]
-static PEAK_ALLOC: PeakAlloc = PeakAlloc;
+use crate::modeler::utils::round::round;
 
 #[derive(Debug)]
 pub struct Model {
-    pub elements: Vec<Element>,
-    pub iteration: i32,
-    pub tnext: f64,
-    pub tcurr: f64,
-    pub log_first: Vec<String>,
-    pub log_last: VecDeque<String>,
-    pub log_max_size: usize,
+    elements: Vec<Element>,
+    rng: SmallRng,
+    iters: u32,
+    tnext: f64,
+    tcurr: f64,
+    log_first: Vec<String>,
+    log_last: VecDeque<String>,
+    log_max_size: usize,
+
+    mem_peak: f64,  // in KB
+    mem_total: f64, // in KB
+    mem_samples: u32,
+    sample_interval: Duration,
+    last_sample: Instant,
+    sys: System,
+    pid: Pid,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(crate = "rocket::serde")]
 pub struct Results {
-    pub results: Vec<SimSummary>,
-    pub log_first: Vec<String>,
-    pub log_last: VecDeque<String>,
-    pub time: f64,
-    pub peak_mem: f64,
-    pub iterations: i32,
+    results: Vec<SimSummary>,
+    log_first: Vec<String>,
+    log_last: VecDeque<String>,
+    iters: u32,
+    sim_time: f64,       // in seconds
+    pub total_time: f64, // in seconds
+    iter_per_sec: f64,
+    mem_peak: f64, // in MB
+    mem_mean: f64, // in MB
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct SimSummary {
-    pub element: Element,
-    pub quantity: u32,
-    pub failures: u32,
-    pub mean_queue_len: f64,
-    pub fail_prob: f64,
-    pub wait_time: f64,
+    element: Element,
+    quantity: u32,
+    failures: u32,
+    mean_queue_len: f64,
+    fail_prob: f64,
+    wait_time: f64,
 }
 
 impl Model {
     pub fn new(elements: Vec<Element>, log_max_size: usize) -> Self {
         Model {
             elements,
-            iteration: -1,
+            rng: SmallRng::seed_from_u64(0),
+            iters: 0,
             tnext: 0.0,
             tcurr: 0.0,
             log_first: Vec::with_capacity(log_max_size),
             log_last: VecDeque::with_capacity(log_max_size + 1), // +1 to account for total sim results
             log_max_size,
+            mem_peak: 0.0,
+            mem_total: 0.0,
+            mem_samples: 0,
+            sample_interval: Duration::from_millis(500), // 0.5 seconds
+            last_sample: Instant::now(),
+            sys: System::new_all(),
+            pid: Pid::from_u32(std::process::id()),
         }
     }
 
     pub fn simulate(&mut self, time: f64) -> Results {
-        reset_next_id();
-
-        self.iteration = 0;
         self.log_first.push(format!(
             "There are {} elements in the simulation",
             self.elements.len()
         ));
 
-        // init measurements
-        PEAK_ALLOC.reset_peak_usage();
-        let time_start = Instant::now();
-
+        let time_start = ProcessTime::now();
         self.mainloop(time);
-
-        // finalize measurments
-        let time_elapsed = time_start.elapsed().as_secs_f64();
-        let peak_mem = PEAK_ALLOC.peak_usage_as_mb() as f64;
+        let time_elapsed = round(time_start.elapsed().as_secs_f64(), 4);
 
         self.log_sim_results();
         // trim extra newline
         self.log_last.get_mut(0).unwrap().remove(0);
-        
+
         // print!("{:#?}", self.collect_sim_summary());
         Results {
             results: self.collect_sim_summary(),
             log_first: self.log_first.clone(),
             log_last: self.log_last.clone(),
-            time: time_elapsed,
-            peak_mem,
-            iterations: self.iteration,
+            iters: self.iters,
+            sim_time: time_elapsed,
+            total_time: 0.0,
+            iter_per_sec: round(self.iters as f64 / time_elapsed, 4),
+            // in MB
+            mem_peak: round(self.mem_peak / 1024.0, 4),
+            mem_mean: round(self.mem_total / self.mem_samples as f64 / 1024.0, 4),
         }
     }
 
@@ -118,10 +134,8 @@ impl Model {
             }
 
             // move things between relevant elements queues
-            to_out_act.clear();
-            to_in_act.clear();
             for (i, e) in self.elements.iter().enumerate() {
-                if e.get_tnext() == self.tcurr {
+                if e.get_tnext() != self.tcurr {
                     continue;
                 }
                 // collect out_act elements
@@ -133,15 +147,18 @@ impl Model {
             }
             // run actions
             for &i in &to_out_act {
-                self.elements[i].out_act();
+                self.elements[i].out_act(&mut self.rng);
             }
             for &i in &to_in_act {
-                self.elements[i].in_act();
+                self.elements[i].in_act(&mut self.rng);
             }
+            to_out_act.clear();
+            to_in_act.clear();
 
             // logging
-            self.iteration += 1;
+            self.iters += 1;
             self.log_event(event_id);
+            self.update_mem_stats();
         }
     }
 
@@ -149,7 +166,7 @@ impl Model {
         let e = &self.elements[*out_e_id];
 
         if e.next_elements.len() == 1 {
-            return Some(e.next_elements[0])
+            return Some(e.next_elements[0]);
         }
 
         match &e.next_element_type {
@@ -203,7 +220,7 @@ impl Model {
             "\n
             >>>     Event #{} in {}     <<<\n
             >>>     time: {:.4}     <<<\n\n",
-            self.iteration, e.name, self.tnext
+            self.iters, e.name, self.tnext
         )
         .unwrap();
 
@@ -293,5 +310,18 @@ impl Model {
                 },
             })
             .collect()
+    }
+
+    fn update_mem_stats(&mut self) {
+        if self.last_sample.elapsed() >= self.sample_interval {
+            self.sys.refresh_processes(ProcessesToUpdate::All, true);
+            if let Some(proc) = self.sys.process(self.pid) {
+                let mem_curr = proc.memory() as f64 / 1024.0;
+                self.mem_peak = self.mem_peak.max(mem_curr);
+                self.mem_total += mem_curr;
+                self.mem_samples += 1;
+            }
+            self.last_sample = Instant::now();
+        }
     }
 }

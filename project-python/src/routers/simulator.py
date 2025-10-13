@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Request
+from time import perf_counter
 
 from src.routers.utils.element_parser import create_elements, parse_dist
 from src.routers.utils.load_calculator import calculate_load
@@ -10,6 +11,7 @@ router = APIRouter()
 
 @router.post("/simulate")
 async def simulate(request: Request):
+    timer_start = perf_counter()
     body = await request.json()
     # full structure of model can be checked in /premade_flowcharts/basic.json
     model = body["model"]
@@ -21,7 +23,9 @@ async def simulate(request: Request):
     print("Modeling started!")
     simdata = Model(elements).simulate(simtime, log_max_size)
     print("Modeling ended!")
+    time_elapsed = perf_counter() - timer_start
 
+    simdata["total_time"] = round(time_elapsed, 4)
     return simdata
 
 

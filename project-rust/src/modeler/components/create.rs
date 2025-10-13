@@ -1,12 +1,14 @@
+use rand::rngs::SmallRng;
+
 use crate::modeler::components::element::Element;
 
 pub fn in_act() {
     // nothing
 }
 
-pub fn out_act(e: &mut Element) {
+pub fn out_act(e: &mut Element, rng: &mut SmallRng) {
     e.quantity += 1;
-    e.put_tnext(e.tcurr + e.get_delay());
+    e.put_tnext(e.tcurr + e.get_delay(rng));
     e.pop_tnext();
 }
 

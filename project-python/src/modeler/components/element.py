@@ -1,7 +1,7 @@
 from queue import PriorityQueue
-import numpy as np
 
 from src.modeler.utils.consts import DistributionType, NextElementType
+import src.utils.rng as rng
 
 
 class Element:
@@ -39,16 +39,16 @@ class Element:
     def get_delay(self) -> float:
         match (self.distribution):
             case DistributionType.exponential:
-                return np.random.exponential(self.delay_mean)
+                return rng.exp(self.delay_mean)
             case DistributionType.normal:
-                return np.random.normal(self.delay_mean, self.delay_deviation)
+                return rng.normal(self.delay_mean, self.delay_deviation)
             case DistributionType.uniform:
-                return np.random.uniform(
+                return rng.uniform(
                     self.delay_mean - self.delay_deviation,
                     self.delay_mean + self.delay_deviation,
                 )
             case DistributionType.erlang:
-                return np.random.gamma(self.k, self.delay_mean)
+                return rng.gamma(self.k, self.delay_mean)
             case DistributionType.constant | _:
                 return self.delay_mean
 

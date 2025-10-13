@@ -1,28 +1,27 @@
+use rand::SeedableRng;
+use rand::rngs::SmallRng;
+
 use crate::modeler::utils::consts::DistributionType;
 use crate::modeler::utils::random;
 
 const SAMPLE_SIZE: u32 = 10000;
 
 pub fn calculate_capacity(deviation: f64, dist: DistributionType, mean: f64, replica: u32) -> f64 {
-    match dist {
-        DistributionType::Exponential => {
-            streaming_mean((0..SAMPLE_SIZE).map(|_| random::exponential(mean))) / replica as f64
-        }
-        DistributionType::Normal => {
-            streaming_mean((0..SAMPLE_SIZE).map(|_| random::normal(mean, deviation)))
-                / replica as f64
-        }
-        DistributionType::Uniform => {
-            streaming_mean(
-                (0..SAMPLE_SIZE).map(|_| random::uniform(mean - deviation, mean + deviation)),
-            ) / replica as f64
-        }
-        DistributionType::Erlang => {
-            streaming_mean((0..SAMPLE_SIZE).map(|_| random::erlang(mean, deviation as usize)))
-                / replica as f64
-        }
-        DistributionType::Constant => return mean,
+    if dist == DistributionType::Constant {
+        return mean;
     }
+
+    let mut rng = SmallRng::seed_from_u64(0);
+
+    let iter = (0..SAMPLE_SIZE).map(|_| match dist {
+        DistributionType::Exponential => random::exponential(&mut rng, mean),
+        DistributionType::Normal => random::normal(&mut rng, mean, deviation),
+        DistributionType::Uniform => random::uniform(&mut rng, mean - deviation, mean + deviation),
+        DistributionType::Erlang => random::erlang(&mut rng, mean, deviation as usize),
+        DistributionType::Constant => unreachable!(),
+    });
+
+    streaming_mean(iter) / replica as f64
 }
 
 fn streaming_mean<I>(iter: I) -> f64

@@ -1,13 +1,14 @@
 use std::cell::Cell;
 use std::collections::HashMap;
 
-use crate::modeler::components::element::Element;
+use crate::modeler::components::element::{Element, reset_next_id};
 use crate::modeler::utils::consts::DistributionType;
 use crate::modeler::utils::consts::ElementType;
 use crate::modeler::utils::consts::NextElementType;
 use crate::routers::simulator::ElementInfo;
 
 pub fn create_elements(model: HashMap<String, ElementInfo>) -> Vec<Element> {
+    reset_next_id();
     let mut elements_by_id = HashMap::new();
     // initialize elements
     for (id, element_info) in &model {

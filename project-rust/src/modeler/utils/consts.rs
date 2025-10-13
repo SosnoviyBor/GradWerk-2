@@ -9,7 +9,7 @@ pub enum NextElementType {
     Random,
 }
 
-#[derive(Clone, Serialize, Deserialize, Debug)]
+#[derive(Clone, Serialize, Deserialize, Debug, PartialEq)]
 pub enum DistributionType {
     Exponential,
     Normal,

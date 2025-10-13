@@ -1,2 +1,5 @@
 [default]
 template_dir = "src/templates"
+
+[default.limits]
+form = "10 MiB"

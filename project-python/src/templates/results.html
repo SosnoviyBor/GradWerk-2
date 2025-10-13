@@ -60,12 +60,20 @@ Simuation results
       <table class="resource-table">
         <tbody>
           <tr>
-            <td class="resource-label"><strong>Memory Usage:</strong></td>
-            <td class="resource-value">{{ memory | round(2) }} MB</td>
+            <td class="resource-label"><strong>Mean RAM Usage:</strong></td>
+            <td class="resource-value">{{ mem_mean }} MB</td>
           </tr>
           <tr>
-            <td class="resource-label"><strong>Computing Time:</strong></td>
-            <td class="resource-value">{{ time | round(4) }} seconds</td>
+            <td class="resource-label"><strong>Peak RAM Usage:</strong></td>
+            <td class="resource-value">{{ mem_peak }} MB</td>
+          </tr>
+          <tr>
+            <td class="resource-label"><strong>Total CPU Time:</strong></td>
+            <td class="resource-value">{{ total_time }} seconds</td>
+          </tr>
+          <tr>
+            <td class="resource-label"><strong>Sim CPU Time:</strong></td>
+            <td class="resource-value">{{ sim_time }} seconds</td>
           </tr>
           <tr>
             <td class="resource-label"><strong>Total events:</strong></td>
@@ -73,7 +81,7 @@ Simuation results
           </tr>
           <tr>
             <td class="resource-label"><strong>Events/second:</strong></td>
-            <td class="resource-value">{{ (iterations / time) | round(2) }}</td>
+            <td class="resource-value">{{ iters_per_sec }}</td>
           </tr>
         </tbody>
       </table>

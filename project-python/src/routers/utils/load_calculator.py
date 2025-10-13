@@ -1,6 +1,7 @@
 import numpy as np
 
 from src.modeler.utils.consts import DistributionType
+import src.utils.rng as rng
 
 
 def calculate_load(deviation: float, dist: str, mean: float, replica: int):
@@ -8,16 +9,14 @@ def calculate_load(deviation: float, dist: str, mean: float, replica: int):
 
     match (dist):
         case DistributionType.exponential:
-            sample = np.random.exponential(mean, SAMPLE_SIZE)
+            sample = rng.exp(mean, SAMPLE_SIZE)
         case DistributionType.normal:
-            sample = np.random.normal(mean, deviation, SAMPLE_SIZE)
+            sample = rng.normal(mean, deviation, SAMPLE_SIZE)
         case DistributionType.uniform:
-            sample = np.random.uniform(mean - deviation, mean + deviation, SAMPLE_SIZE)
+            sample = rng.uniform(mean - deviation, mean + deviation, SAMPLE_SIZE)
         case DistributionType.erlang:
-            sample = np.random.gamma(deviation, mean, SAMPLE_SIZE)
+            sample = rng.erlang(mean, deviation, SAMPLE_SIZE)
         case DistributionType.constant | _:
-            sample = [mean for _ in range(SAMPLE_SIZE)]
+            return mean
 
-    load = np.mean(sample) / replica
-
-    return load
+    return np.mean(sample) / replica
