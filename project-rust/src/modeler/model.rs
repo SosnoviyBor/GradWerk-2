@@ -1,4 +1,5 @@
 use cpu_time::ProcessTime;
+use rand::seq::IndexedRandom;
 use rand::SeedableRng;
 use rand::rngs::SmallRng;
 use rocket::serde::{Deserialize, Serialize};
@@ -140,8 +141,10 @@ impl Model {
                 }
                 // collect out_act elements
                 to_out_act.push(i);
-                // collect in_act elements
-                if let Some(in_id) = self.pick_in_act_element(&i) {
+            }
+            // collect in_act elements
+            for i in &to_out_act {
+                if let Some(in_id) = self.pick_in_act_element(i) {
                     to_in_act.push(in_id);
                 }
             }
@@ -162,7 +165,7 @@ impl Model {
         }
     }
 
-    fn pick_in_act_element(&self, out_e_id: &usize) -> Option<usize> {
+    fn pick_in_act_element(&mut self, out_e_id: &usize) -> Option<usize> {
         let e = &self.elements[*out_e_id];
 
         if e.next_elements.len() == 1 {
@@ -172,19 +175,19 @@ impl Model {
         match &e.next_element_type {
             NextElementType::Random => {
                 if !e.next_elements.is_empty() {
-                    let rand_index = rand::random::<u32>() % e.next_elements.len() as u32;
-                    Some(rand_index as usize)
+                    Some(*e.next_elements.choose(&mut self.rng).unwrap())
                 } else {
                     None
                 }
             }
             NextElementType::RoundRobin(idx) => {
                 if !e.next_elements.is_empty() {
-                    if idx.get() == e.next_elements.len() {
+                    if idx.get() == e.next_elements.len() - 1 {
                         idx.set(0);
+                    } else {
+                        idx.set(idx.get() + 1);
                     }
-                    idx.set(idx.get() + 1);
-                    Some(idx.get())
+                    Some(*e.next_elements.get(idx.get()).unwrap())
                 } else {
                     None
                 }
@@ -193,10 +196,10 @@ impl Model {
                 if !e.next_elements.is_empty() {
                     let next_elements_copy = e.next_elements.clone();
                     let mut min_queue_idx = 0;
-                    let mut min_queue = u32::MAX;
+                    let mut min_queue = i32::MAX;
                     for i in next_elements_copy.iter() {
                         let next_elem = self.elements.iter().find(|e| e.id == *i).unwrap();
-                        let free_queue = next_elem.queue - next_elem.state;
+                        let free_queue = next_elem.queue as i32 - next_elem.state as i32;
                         if free_queue < min_queue {
                             min_queue = free_queue;
                             min_queue_idx = *i;

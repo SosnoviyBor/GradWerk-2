@@ -51,6 +51,7 @@ export function updateAllLoads() {
         }
     });
     // start with create nodes (recursive)
+    console.log("eh")
     evaluateChildrenLoad(createNodes);
     // update outline
     const process_nodes = document.getElementsByClassName("drawflow-node process")
@@ -61,57 +62,61 @@ export function updateAllLoads() {
     })
 }
 
-function evaluateChildrenLoad(nodes) {
+function evaluateChildrenLoad(nodes, depth = 0, maxDepth = 5) {
+    if (depth > maxDepth) return;
+
     Object.values(nodes).forEach(parent_node => {
         // get children list
         const children_ids = Object.values(parent_node.outputs).flatMap(output =>
             Object.values(output.connections)
                 .flatMap(conn => (conn.node ? [conn.node] : []))
         );
+
         if (children_ids.length === 0) return;
-        // distribute load between the children
-        const parent_el = document.getElementById(`node-${parent_node.id}`)
+
+        const parent_el = document.getElementById(`node-${parent_node.id}`);
+        const parent_load = Number(parent_el.dataset.load);
+
         switch (parent_node.data.order) {
-            // the load depends on child's capacity
-            case ElementOrder.balanced:
-                const init_capacity = 0
-                const children_total_capacity = Object.values(children_ids).reduce(
+            case ElementOrder.balanced: {
+                const total_capacity = children_ids.reduce(
                     (acc, id) => acc + Number(document.getElementById(`node-${id}`).dataset.capacity),
-                    init_capacity
-                )
-                Object.values(children_ids).forEach(id => {
-                    const child_el = document.getElementById(`node-${id}`)
-                    // fucking hell js has long nameplates
-                    const parent_load = Number(parent_el.dataset.load);
-                    const child_capacity = Number(child_el.dataset.capacity);
-                    const child_share = child_capacity / children_total_capacity;
-                    const curr_load = Number(child_el.dataset.load)
-                    child_el.dataset.load = curr_load + parent_load * child_share
-                })
-                break
-            // the load is spread evenly
+                    0
+                );
+
+                children_ids.forEach(id => {
+                    const child_el = document.getElementById(`node-${id}`);
+                    const curr_load = Number(child_el.dataset.load);
+                    const capacity = Number(child_el.dataset.capacity);
+                    const share = capacity / total_capacity;
+                    child_el.dataset.load = curr_load + parent_load * share;
+                });
+                break;
+            }
+
             case ElementOrder.random:
-            case ElementOrder.round_robin:
-                Object.values(children_ids).forEach(id => {
-                    const child_el = document.getElementById(`node-${id}`)
-                    const parent_load = Number(parent_el.dataset.load);
-                    const child_count = children_ids.length
-                    const curr_load = Number(child_el.dataset.load)
-                    child_el.dataset.load = curr_load + parent_load / child_count
-                })
-                break
+            case ElementOrder.round_robin: {
+                children_ids.forEach(id => {
+                    const child_el = document.getElementById(`node-${id}`);
+                    const curr_load = Number(child_el.dataset.load);
+                    child_el.dataset.load = curr_load + parent_load / children_ids.length;
+                });
+                break;
+            }
         }
-        // recursion!
+
+        // Recursion — increment depth
         evaluateChildrenLoad(
-            Object.values(children_ids).flatMap(
-                id => editor.export().drawflow.Home.data[id]
-            )
+            children_ids.map(id => editor.export().drawflow.Home.data[id]),
+            depth + 1,
+            maxDepth
         );
-    })
+    });
 }
 
+
 function updateOutline(node, load_ratio) {
-    if (load_ratio >= 1) {
+    if (load_ratio < .8) {
         // remove styles
         node.style.border = "";
         node.style.boxShadow = "";
@@ -119,7 +124,7 @@ function updateOutline(node, load_ratio) {
         // color orange
         node.style.border = "1px solid orange";
         node.style.boxShadow = "0 2px 20px 2px orange";
-    } else if (load_ratio < .8) {
+    } else if (load_ratio >= 1) {
         // color red
         node.style.border = "1px solid red";
         node.style.boxShadow = "0 2px 20px 2px red";

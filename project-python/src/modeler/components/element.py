@@ -48,7 +48,7 @@ class Element:
                     self.delay_mean + self.delay_deviation,
                 )
             case DistributionType.erlang:
-                return rng.gamma(self.k, self.delay_mean)
+                return rng.erlang(self.k, self.delay_mean)
             case DistributionType.constant | _:
                 return self.delay_mean
 

@@ -8,7 +8,7 @@ const SAMPLE_SIZE: u32 = 10000;
 
 pub fn calculate_capacity(deviation: f64, dist: DistributionType, mean: f64, replica: u32) -> f64 {
     if dist == DistributionType::Constant {
-        return mean;
+        return replica as f64 / mean;
     }
 
     let mut rng = SmallRng::seed_from_u64(0);
@@ -21,7 +21,10 @@ pub fn calculate_capacity(deviation: f64, dist: DistributionType, mean: f64, rep
         DistributionType::Constant => unreachable!(),
     });
 
-    streaming_mean(iter) / replica as f64
+    // average time per item (in seconds)
+    let avg_time = streaming_mean(iter);
+
+    replica as f64 / avg_time
 }
 
 fn streaming_mean<I>(iter: I) -> f64

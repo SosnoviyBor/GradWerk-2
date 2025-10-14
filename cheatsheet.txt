@@ -1,2 +1,10 @@
 # Docker
 docker-compose up
+
+# Lizard
+
+## Rust
+lizard -x"./target/*" -x"./src/static/*" -x"./src/templates/*"
+
+## Python
+lizard -x"./venv/*" -x"./src/static/*" -x"./src/templates/*"

@@ -32,17 +32,15 @@ export function generate_chart(element, label, param, border_color, bg_color, on
 
 
 function parseData(value, only_process) {
-    const data = []
+    const data = Array.from(document.getElementsByClassName("element"))
+        .filter(element =>
+            !(only_process && element.dataset.elementType.toLowerCase() !== "process")
+        )
+        .map(element => ({
+            name: element.dataset.name,
+            value: element.dataset[value]
+        }))
+        .sort((a, b) => a.name.localeCompare(b.name));
 
-    data.push(
-        ...Array.from(document.getElementsByClassName("element"))
-            .filter(element => !(only_process && element.dataset.elementType.toLowerCase() !== "process"))
-            .map(element => ({
-                name: element.dataset.name,
-                value: element.dataset[value]
-            }))
-    );
-
-
-    return data
+    return data;
 }
