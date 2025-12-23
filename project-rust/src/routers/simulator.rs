@@ -43,12 +43,11 @@ pub fn simulate(request: Json<SimRequest>) -> Json<Results> {
     assert!(data.simtime > 0.0 && data.log_max_size > 0);
 
     let elements = create_elements(data.model);
-    print!("Modeling started!");
+    // print!("Modeling started!");
     let mut simdata = Model::new(elements, data.log_max_size as usize).simulate(data.simtime);
-    print!("Modeling finished!");
-    let time_elapsed = round(time_start.elapsed().as_secs_f64(), 4);
+    // print!("Modeling finished!");
+    simdata.total_time = round(time_start.elapsed().as_secs_f64(), 4).max(0.0001);
 
-    simdata.total_time = time_elapsed;
     // print!("{:#?}", simdata);
     Json(simdata)
 }

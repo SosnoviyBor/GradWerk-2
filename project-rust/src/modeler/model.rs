@@ -1,7 +1,7 @@
 use cpu_time::ProcessTime;
-use rand::seq::IndexedRandom;
 use rand::SeedableRng;
 use rand::rngs::SmallRng;
+use rand::seq::IndexedRandom;
 use rocket::serde::{Deserialize, Serialize};
 use std::collections::VecDeque;
 use std::fmt::Write;
@@ -85,11 +85,17 @@ impl Model {
 
         let time_start = ProcessTime::now();
         self.mainloop(time);
-        let time_elapsed = round(time_start.elapsed().as_secs_f64(), 4);
+        let time_elapsed = round(time_start.elapsed().as_secs_f64(), 4).max(0.0001);
 
         self.log_sim_results();
         // trim extra newline
         self.log_last.get_mut(0).unwrap().remove(0);
+
+        // prevent errors if the simulation was too fast
+        if self.mem_samples == 0 {
+            self.sample_interval = Duration::from_millis(0);
+            self.update_mem_stats();
+        }
 
         // print!("{:#?}", self.collect_sim_summary());
         Results {

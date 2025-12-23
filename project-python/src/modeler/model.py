@@ -47,6 +47,11 @@ class Model:
         # trim trailing newline
         self.log["last"][0] = self.log["last"][0][1:]
 
+        # prevent errors if the simulation was too fast
+        if self.mem_samples == 0:
+            self.sample_interval = 0
+            self.update_mem_stats()
+
         return {
             "results": self._collect_sim_summary(),
             "log": self.log,
