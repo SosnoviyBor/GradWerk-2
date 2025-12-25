@@ -49,7 +49,7 @@ class CommonElements {
     
     static set_queue_size = `
         <p>Queue size</p>
-        <input type="number" step="1" value="1" min="1" df-queuesize>
+        <input type="number" step="1" value="5" min="1" df-queuesize>
         <br>
     `
 
